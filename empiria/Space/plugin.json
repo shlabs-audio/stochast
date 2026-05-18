@@ -1,0 +1,35 @@
+{
+  "slug": "SHLabs-Space",
+  "name": "SHLabs Space",
+  "version": "2.0.0",
+  "license": "GPL-3.0-or-later",
+  "brand": "SHLabs",
+  "author": "Kevin Schoenholzer",
+  "authorEmail": "kevinschonholzer@gmail.com",
+  "authorUrl": "https://kevinschoenholzer.com",
+  "pluginUrl": "https://kevinschoenholzer.com/empiria",
+  "manualUrl": "https://github.com/kevinschoenholzer/empiria/blob/main/docs/modules.md",
+  "sourceUrl": "https://github.com/kevinschoenholzer/empiria",
+  "donateUrl": "",
+  "changelogUrl": "https://github.com/kevinschoenholzer/empiria/blob/main/CHANGELOG.md",
+  "modules": [
+    {
+      "slug": "Life",
+      "name": "Life",
+      "description": "Conway's Game of Life on a 24×24 grid (B3/S23 rule). Each tick, every cell updates based on its 8 Moore neighbours. Right-click presets include alternate cellular-automaton rules: HighLife (B36/S23), Day & Night (B3678/S34678), majority rule, voter model. Outputs total live count, generation count, oscillation/blinker gate, and polyphonic per-row activity.",
+      "tags": ["Random", "Logic", "Utility", "Polyphonic"]
+    },
+    {
+      "slug": "Schelling",
+      "name": "Schelling",
+      "description": "Schelling segregation model on a 24×24 grid. Two populations (red, blue) plus empty cells. Each agent is content if a fraction ≥ θ of its 8 neighbours are same-type; unhappy agents relocate to a random empty cell. Demonstrates that mild same-type preference (θ = 0.30) produces dramatic large-scale segregation. Outputs segregation index, unhappy fraction, average local same-type fraction, and a 'segregated' gate.",
+      "tags": ["Random", "Logic", "Utility", "Polyphonic"]
+    },
+    {
+      "slug": "Turing",
+      "name": "Turing",
+      "description": "Gray-Scott reaction-diffusion on a 48×48 grid. Two chemicals u and v diffuse and react; u + 2v → 3v (autocatalysis), v → P (decay). Feed rate F and kill rate k control the steady state. Different (F, k) produce spots, stripes, labyrinth, or solitons — Turing's mechanism for biological pattern formation. Outputs mean u, mean v, pattern variance, and an oscillation gate.",
+      "tags": ["Random", "Logic", "Utility", "Polyphonic"]
+    }
+  ]
+}

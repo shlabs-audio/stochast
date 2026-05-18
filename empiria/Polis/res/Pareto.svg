@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     width="300" height="380" viewBox="0 0 300 380">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#1c1f2a"/>
+      <stop offset="100%" stop-color="#11131a"/>
+    </linearGradient>
+    <linearGradient id="strip" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#23273a"/>
+      <stop offset="100%" stop-color="#161824"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="300" height="380" fill="url(#bg)"/>
+  <rect x="0" y="0" width="300" height="36" fill="url(#strip)"/>
+  <!-- family-stripe --><rect x="0" y="36" width="300" height="3" fill="#cf8a4f" opacity="0.75"/>
+  <rect x="10" y="44" width="280" height="190" fill="#080a10" stroke="#2b2f42" stroke-width="0.5"/>
+
+  <g fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
+     font-size="8" text-anchor="middle" letter-spacing="1.5">
+    <text x="45"  y="246">POP</text>
+    <text x="120" y="246">TRADE</text>
+    <text x="195" y="246">BIAS</text>
+    <text x="270" y="246">POOL</text>
+  </g>
+
+  <g fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
+     font-size="7.5" text-anchor="middle" letter-spacing="1.5">
+    <text x="120" y="282">RATE</text>
+    <text x="270" y="282">SHUFFLE</text>
+  </g>
+
+  <text x="10" y="313" fill="#6a7088" font-family="Helvetica, Arial, sans-serif"
+        font-size="7" font-weight="bold" letter-spacing="2">IN</text>
+  <g fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
+     font-size="7.5" text-anchor="middle" letter-spacing="1.2">
+    <text x="45"  y="313">CLOCK</text>
+    <text x="120" y="313">RESET</text>
+    <text x="195" y="313">P·CV</text>
+  </g>
+
+  <text x="10" y="344" fill="#6a7088" font-family="Helvetica, Arial, sans-serif"
+        font-size="7" font-weight="bold" letter-spacing="2">OUT</text>
+  <g fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
+     font-size="7.5" text-anchor="middle" letter-spacing="1.2">
+    <text x="45"  y="344">VAL</text>
+    <text x="120" y="344">GINI</text>
+    <text x="195" y="344">TOP</text>
+    <text x="270" y="344">CONC</text>
+  </g>
+
+  <line x1="8" y1="238" x2="292" y2="238" stroke="#2b2f42" stroke-width="0.4"/>
+  <line x1="8" y1="305" x2="292" y2="305" stroke="#2b2f42" stroke-width="0.4"/>
+  <line x1="8" y1="350" x2="292" y2="350" stroke="#2b2f42" stroke-width="0.4"/>
+</svg>

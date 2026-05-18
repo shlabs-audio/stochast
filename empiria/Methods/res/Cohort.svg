@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     width="180" height="380" viewBox="0 0 180 380">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#1c1f2a"/>
+      <stop offset="100%" stop-color="#11131a"/>
+    </linearGradient>
+    <linearGradient id="strip" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#23273a"/>
+      <stop offset="100%" stop-color="#161824"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="180" height="380" fill="url(#bg)"/>
+
+  <rect x="0" y="0" width="180" height="36" fill="url(#strip)"/>
+  <!-- family-stripe --><rect x="0" y="36" width="180" height="3" fill="#6ec8e0" opacity="0.75"/>
+  <text x="90" y="24" fill="#ffffff" style="fill:#ffffff" font-family="Helvetica, Arial, sans-serif"
+        font-size="15" font-weight="bold" text-anchor="middle" letter-spacing="2">COHORT</text>
+
+  <!-- Scope window: cluster-axis display + density histogram -->
+  <rect x="8" y="44" width="164" height="106" fill="#080a10" stroke="#2b2f42" stroke-width="0.5"/>
+
+  <text x="30"  y="172" fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
+        font-size="9" text-anchor="middle" letter-spacing="2">K</text>
+  <text x="90"  y="172" fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
+        font-size="9" text-anchor="middle" letter-spacing="2">RATE</text>
+  <text x="150" y="172" fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
+        font-size="9" text-anchor="middle" letter-spacing="2">RANGE</text>
+
+  <text x="60"  y="230" fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
+        font-size="8" text-anchor="middle" letter-spacing="1">SEMI</text>
+  <text x="120" y="230" fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
+        font-size="8" text-anchor="middle" letter-spacing="1">RESET</text>
+
+  <rect x="0" y="270" width="180" height="110" fill="url(#strip)"/>
+
+  <text x="60"  y="288" fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
+        font-size="8" text-anchor="middle" letter-spacing="1">IN</text>
+  <text x="120" y="288" fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
+        font-size="8" text-anchor="middle" letter-spacing="1">TRIG</text>
+
+  <text x="90"  y="335" fill="#e6e9f2" font-family="Helvetica, Arial, sans-serif"
+        font-size="8" text-anchor="middle" letter-spacing="2" font-weight="bold">OUT</text>
+</svg>

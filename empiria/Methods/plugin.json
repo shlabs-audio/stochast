@@ -1,0 +1,107 @@
+{
+  "slug": "SHLabs-Methods",
+  "name": "SHLabs Methods",
+  "version": "2.0.0",
+  "license": "GPL-3.0-or-later",
+  "brand": "SHLabs",
+  "author": "Kevin Schoenholzer",
+  "authorEmail": "kevinschonholzer@gmail.com",
+  "authorUrl": "https://kevinschoenholzer.com",
+  "pluginUrl": "https://kevinschoenholzer.com/empiria",
+  "manualUrl": "https://github.com/kevinschoenholzer/empiria/blob/main/docs/modules.md",
+  "sourceUrl": "https://github.com/kevinschoenholzer/empiria",
+  "donateUrl": "",
+  "changelogUrl": "https://github.com/kevinschoenholzer/empiria/blob/main/CHANGELOG.md",
+  "modules": [
+    {
+      "slug": "Strata",
+      "name": "Strata",
+      "description": "Real-time STL-style decomposition. Splits an incoming CV/audio signal into Trend (low-pass drift), Seasonal (period-locked recurring component) and Residual (everything else).",
+      "tags": ["Utility", "Filter", "Polyphonic"]
+    },
+    {
+      "slug": "Cohort",
+      "name": "Cohort",
+      "description": "Self-organising quantiser using online k-means. Learns K cluster centres from incoming CV and snaps the output to the nearest one. Optional V/oct semitone snap.",
+      "tags": ["Quantizer", "Utility"]
+    },
+    {
+      "slug": "Factor",
+      "name": "Factor",
+      "description": "Real-time principal-component analysis on six CV inputs (Sanger's rule). Outputs the top three latent components — a 'factor analysis' mixer for modulation.",
+      "tags": ["Mixer", "Utility", "Polyphonic"]
+    },
+    {
+      "slug": "Sample",
+      "name": "Sample",
+      "description": "Data-generating process: draws random samples from a selectable parametric distribution (Normal / Uniform / Exponential / Beta) at clock rate. Outputs the live sample, running empirical mean and SD over a configurable window, and a sync trigger. Visualization overlays the theoretical PDF on the empirical histogram so users can watch the empirical converge to the theoretical as the window grows.",
+      "tags": ["Random", "Utility", "Sample and hold"]
+    },
+    {
+      "slug": "Frame",
+      "name": "Frame",
+      "description": "Sampling frame. Takes a signal stream (any source) and collects samples on a clock; reports sample mean, sample SD, and standard error of the mean. Three modes: SNAPSHOT (collect N, then freeze — cross-sectional view), RUNNING (ring buffer of latest N — moving window), GROWING (accumulate up to max — visible Law of Large Numbers). Visualization shows the buffer's histogram with a vertical mean line and shaded confidence interval band. Polyphonic SIG input collects all channels each tick.",
+      "tags": ["Utility", "Sample and hold", "Polyphonic"]
+    },
+    {
+      "slug": "Regress",
+      "name": "Regress",
+      "description": "Online OLS regression. Pairs (X, Y) sampled on a clock are stored in a buffer; the line Y = α + β·X is fit by minimizing sum of squared residuals. Outputs slope β, intercept α, R², and current residual Y - (α + β·X). Visualization is a live scatterplot with the fitted line and a shaded confidence band whose width reflects estimation uncertainty (narrower in the middle of X, wider at the extremes — the classic trumpet shape). Polyphonic X / Y inputs add multiple paired observations per tick. Three modes match Frame's, so the suite composes end-to-end.",
+      "tags": ["Utility", "Polyphonic"]
+    },
+    {
+      "slug": "Test",
+      "name": "Test",
+      "description": "Hypothesis testing. Computes a two-tailed t-statistic from a buffered signal against H₀: μ = μ₀ (one-sample) or H₀: μ₁ − μ₂ = δ₀ (two-sample, Welch's t). Outputs the t-statistic, p-value, reject-H₀ gate, and Cohen's d effect size. Visualization shows the null distribution (Gaussian approximation) with shaded rejection regions for the selected α (0.01 / 0.05 / 0.10), the observed t marked as a vertical line, and a REJECT / n.s. decision indicator. Polyphonic SIG / SIG2 inputs add one observation per channel per tick.",
+      "tags": ["Utility", "Polyphonic"]
+    },
+    {
+      "slug": "Boot",
+      "name": "Boot",
+      "description": "Bootstrap resampling. Takes a buffer of samples and resamples with replacement B times, computing a selectable statistic (mean / median / SD / variance) on each resample. The empirical bootstrap distribution is shown as a live histogram — this IS the sampling distribution of the estimator, made visible without parametric assumptions. Outputs the point estimate, bootstrap SE (=SD of bootstrap distribution), and percentile-CI bounds. Patch a clock into RSAMP to trigger fresh resamples on the same data and see the bootstrap's own variability.",
+      "tags": ["Random", "Utility", "Polyphonic"]
+    },
+    {
+      "slug": "Lag",
+      "name": "Lag",
+      "description": "Time-series autocorrelation analysis. Estimates the autocorrelation function ρ(k) at lags 1..K from a buffered signal, plus the AR(1) coefficient φ = ρ(1) and the residual variance σ²ε = σ²(1−φ²). DETREND (off / mean / linear) handles non-stationary input. Visualization is the canonical ACF bar plot with shaded Bartlett ±1.96/√n significance bands; bars outside the band indicate significant autocorrelation at that lag. WHITE gate fires when all displayed lags fall within the band (data is consistent with white noise). Polyphonic ACF output exposes ρ(1)..ρ(K) per channel.",
+      "tags": ["Utility", "Polyphonic"]
+    },
+    {
+      "slug": "Code",
+      "name": "Code",
+      "description": "Continuous-to-categorical encoder. Maps an incoming CV stream into K ordinal categories (Likert-style 1..K, K = 2..7) by uniform cutpoints over the user-set range [LOW, HIGH]. The bridge from continuous data-generating processes to survey-like categorical observations. Outputs the current category as 1V-per-category CV (polyphonic, matching SIG channels), per-category gates, running mean category, and Shannon entropy of the empirical category distribution.",
+      "tags": ["Quantizer", "Utility", "Polyphonic"]
+    },
+    {
+      "slug": "Tab",
+      "name": "Tab",
+      "description": "Contingency-table / cross-tabulation module. Two categorical CV streams (X, Y) — typically the outputs of Code modules — are paired and tabulated into a K1×K2 frequency matrix. Reports the χ² statistic, Cramér's V effect size, and an INDEP gate that fires when V < 0.1 (effectively independent). Visualization is a live heatmap with cell shading proportional to relative frequency. Pairs X and Y polyphonically — min(channels) observations per tick.",
+      "tags": ["Utility", "Polyphonic"]
+    },
+    {
+      "slug": "Seed",
+      "name": "Seed",
+      "description": "Reproducibility primitive. Displays a single seed value prominently (0..999), with knob, RANDOMIZE button, and CLOCK input that increments the value on each tick. Outputs a seed CV (proportional voltage, 0..10 V) and a TRIG pulse that fires whenever the seed changes — patch the TRIG into other modules' RESET inputs to re-initialise them in lockstep. The seed value is saved in the patch JSON, so a patch shared between machines produces the same simulation when re-loaded.",
+      "tags": ["Utility"]
+    },
+    {
+      "slug": "Tape",
+      "name": "Tape",
+      "description": "Record-and-replay buffer for CV streams. Three modes: REC (continuously records the SIG input into a ring buffer), PLAY (replays the recorded buffer once), LOOP (replays it forever, wrapping at the buffer end). The user can capture one synthetic dataset and feed it into many parallel analyses (Frame / Regress / Test / Boot / Lag) without the data changing between runs — the cornerstone of reproducible computational pedagogy. Polyphonic SIG input is preserved channel-by-channel. Outputs the replayed signal, the playback cursor position, a wrap-trigger, and a gate that is high while recording or playing.",
+      "tags": ["Utility", "Sample and hold", "Polyphonic"]
+    },
+    {
+      "slug": "Gauge",
+      "name": "Gauge",
+      "description": "Translates a control voltage into a real-world quantity using a user-selectable linear mapping x = A·V + B. Right-click presets cover the units that recur in statistics teaching: percent, probability, z-score, IQ (μ = 100, σ = 15), adult height (cm), 5- and 7-point Likert scales, SAT-style test scores (μ = 500, σ = 100), temperature (°C and °F), and a custom mapping with user-set A and B knobs. The current value is displayed in large numerals with a unit label and a recent-range bar; the original CV is also passed through unchanged so downstream Empiria modules continue to see voltage in its native form. Closes the interpretive gap for general-education learners who otherwise have to mentally translate every knob position from volts into a substantive quantity.",
+      "tags": ["Utility", "Polyphonic"]
+    },
+    {
+      "slug": "Quantity",
+      "name": "Quantity",
+      "description": "Mirror of Gauge for the input side. Lets the user dial a real-world quantity (IQ, °C, percent, z-score, height, Likert, reaction time, ...) directly on a VALUE knob, and emits the back-converted control voltage CV = (VALUE − B) / A. Same preset menu and A / B knobs as Gauge — selecting a preset stamps a known (A, B, VALUE) triple into the knobs, so a learner can set H₀ for a t-test as 'IQ = 100' or a Code cutpoint as '−2 z-scores' without mentally inverting the mapping. The CV input modulates VALUE on the same real-world scale (+1 V → +1 unit). Pairs naturally with Gauge: Quantity sets the input in real units, Gauge reads the output back in real units.",
+      "tags": ["Utility", "Polyphonic"]
+    }
+  ]
+}

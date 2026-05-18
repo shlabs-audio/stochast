@@ -1,0 +1,70 @@
+{
+  "version": "2.6.0",
+  "zoom": 1.0,
+  "gridOffset": [
+    0.0,
+    0.0
+  ],
+  "modules": [
+    {
+      "id": 1,
+      "plugin": "SHLabs-Methods",
+      "model": "Seed",
+      "version": "2.0.0",
+      "params": [
+        {
+          "value": 0.007007007007007007,
+          "id": 0
+        }
+      ],
+      "pos": [
+        0,
+        0
+      ],
+      "rightModuleId": 2
+    },
+    {
+      "id": 2,
+      "plugin": "SHLabs-Space",
+      "model": "Schelling",
+      "version": "2.0.0",
+      "params": [],
+      "pos": [
+        20,
+        0
+      ],
+      "leftModuleId": 1,
+      "rightModuleId": 3
+    },
+    {
+      "id": 3,
+      "plugin": "SHLabs-Methods",
+      "model": "Frame",
+      "version": "2.0.0",
+      "params": [],
+      "pos": [
+        40,
+        0
+      ],
+      "leftModuleId": 2
+    }
+  ],
+  "cables": [
+    {
+      "id": 101,
+      "outputModuleId": 1,
+      "outputId": 1,
+      "inputModuleId": 2,
+      "inputId": 1,
+      "color": "#ffd13a"
+    },
+    {
+      "id": 102,
+      "outputModuleId": 2,
+      "outputId": 0,
+      "inputModuleId": 3,
+      "inputId": 2,
+      "color": "#3695ef"
+    }
+  ]
+}

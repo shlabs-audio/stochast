@@ -1,0 +1,53 @@
+{
+  "slug": "SHLabs-Polis",
+  "name": "SHLabs Polis",
+  "version": "2.0.0",
+  "license": "GPL-3.0-or-later",
+  "brand": "SHLabs",
+  "author": "Kevin Schoenholzer",
+  "authorEmail": "kevinschonholzer@gmail.com",
+  "authorUrl": "https://kevinschoenholzer.com",
+  "pluginUrl": "https://kevinschoenholzer.com/empiria",
+  "manualUrl": "https://github.com/kevinschoenholzer/empiria/blob/main/docs/modules.md",
+  "sourceUrl": "https://github.com/kevinschoenholzer/empiria",
+  "donateUrl": "",
+  "changelogUrl": "https://github.com/kevinschoenholzer/empiria/blob/main/CHANGELOG.md",
+  "modules": [
+    {
+      "slug": "Cascade",
+      "name": "Cascade",
+      "description": "Granovetter threshold model of collective behavior. N agents with heterogeneous activation thresholds; an external Pressure signal pushes them past their tipping points one cascade at a time. Outputs active fraction, delta, ignition gate, and per-agent gates.",
+      "tags": ["Logic", "Random", "Utility", "Polyphonic"]
+    },
+    {
+      "slug": "Discourse",
+      "name": "Discourse",
+      "description": "Deffuant-Weisbuch bounded-confidence convergence model. N agents hold continuous values on [0,1]; at each tick random pairs interact only if their values are within a confidence threshold ε, and pull toward each other by μ. Over time the population fragments into 1..N stable value clusters. Outputs polyphonic values, mean, variance, cluster count.",
+      "tags": ["Random", "Utility", "Polyphonic"]
+    },
+    {
+      "slug": "Pareto",
+      "name": "Pareto",
+      "description": "Stochastic pairwise exchange model (Chakraborti / Boghosian). N agents hold a positive value; random pairs exchange a fraction of the smaller value. Even with fair coin flips, the value condenses on a single agent — adding BIAS (advantage to the higher side) accelerates concentration; adding POOL (mean-field redistribution) creates non-trivial steady-state distributions. Outputs polyphonic value shares, Gini coefficient, top share, concentration gate.",
+      "tags": ["Random", "Utility", "Polyphonic"]
+    },
+    {
+      "slug": "Dilemma",
+      "name": "Dilemma",
+      "description": "Iterated Prisoner's Dilemma round-robin tournament. N agents (assigned to one of four strategies: ALL_C / ALL_D / TFT / GRIM) play pairwise PD each round. MIX biases strategy distribution; PAYOFF tilts the temptation term; NOISE adds action errors that break TFT's nice cooperation. Outputs per-agent cooperation gates, mean cooperation, average score, sucker gate.",
+      "tags": ["Random", "Logic", "Utility", "Polyphonic"]
+    },
+    {
+      "slug": "Diffusion",
+      "name": "Diffusion",
+      "description": "Bass innovation-adoption dynamics. N agents are either adopters or not; each tick each non-adopter has probability p + q·f of adopting, where p is the innovation rate (spontaneous), q is the imitation rate (peer-driven), and f is the current adoption fraction. Produces the canonical S-curve: slow early uptake driven by innovators, accelerating middle phase driven by imitators, plateau as the pool of non-adopters thins. Outputs per-agent adoption gates, fraction adopted, adoption rate, saturation gate. Adoption is irreversible (consistent with the standard Bass model).",
+      "tags": ["Random", "Logic", "Utility", "Polyphonic"]
+    },
+    {
+      "slug": "Network",
+      "name": "Network",
+      "description": "Relational structure generator. Builds an N-agent undirected graph in one of three canonical models: Watts-Strogatz small-world (ring lattice with β rewiring), Erdős–Rényi random graph (each edge present with probability β), or Barabási–Albert preferential attachment (scale-free growth, K seed connections per new node). Outputs polyphonic per-agent degree, mean degree, global clustering coefficient, and a connected-graph gate. The visualization shows the network laid out on a circle with edges between nodes — useful both standalone and as a structural pre-requisite for diffusion-on-networks pedagogy.",
+      "tags": ["Random", "Utility", "Polyphonic"]
+    }
+  ]
+}

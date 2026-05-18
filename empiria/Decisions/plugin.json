@@ -1,0 +1,35 @@
+{
+  "slug": "SHLabs-Decisions",
+  "name": "SHLabs Decisions",
+  "version": "2.0.0",
+  "license": "GPL-3.0-or-later",
+  "brand": "SHLabs",
+  "author": "Kevin Schoenholzer",
+  "authorEmail": "kevinschonholzer@gmail.com",
+  "authorUrl": "https://kevinschoenholzer.com",
+  "pluginUrl": "https://kevinschoenholzer.com/empiria",
+  "manualUrl": "https://github.com/kevinschoenholzer/empiria/blob/main/docs/modules.md",
+  "sourceUrl": "https://github.com/kevinschoenholzer/empiria",
+  "donateUrl": "",
+  "changelogUrl": "https://github.com/kevinschoenholzer/empiria/blob/main/CHANGELOG.md",
+  "modules": [
+    {
+      "slug": "Prospect",
+      "name": "Prospect",
+      "description": "Prospect theory (Kahneman & Tversky 1979/1992). Transforms incoming objective outcome CV (gains and losses relative to a reference point) and objective probability CV into subjective value U(x)·w(p), with loss aversion λ, diminishing sensitivity α, and probability weighting γ. Visualizes both the value function and the probability-weighting function. Pedagogical demonstration of why people overweight rare events, prefer certainty, and feel losses ~2× as strongly as equivalent gains.",
+      "tags": ["Random", "Logic", "Utility"]
+    },
+    {
+      "slug": "Bandit",
+      "name": "Bandit",
+      "description": "Multi-armed bandit with up to 8 arms. Right-click selects the action policy: ε-greedy (explore vs exploit), UCB1 (upper confidence bound), or Thompson sampling (Bayesian). Each arm's true reward μ_i is randomized at reset; the agent pulls one arm per tick. Visualizes per-arm running mean estimate, pull count, and cumulative regret. Teaches the exploration–exploitation trade-off, the role of confidence bounds, and Bayesian decision-making, all on one screen.",
+      "tags": ["Random", "Logic", "Utility", "Polyphonic"]
+    },
+    {
+      "slug": "DDM",
+      "name": "DDM",
+      "description": "Drift-diffusion (Ratcliff) choice model. An accumulator integrates noisy evidence with drift rate v (true signal strength) toward two absorbing boundaries at ±a. The trial ends when the accumulator hits a boundary; the choice is determined by which one was hit and the time elapsed is the reaction time. Outputs the live evidence trace, choice gate (high if upper threshold reached), reaction-time CV, and running mean accuracy. The standard cognitive-psychology model of two-alternative forced-choice.",
+      "tags": ["Random", "Logic", "Utility"]
+    }
+  ]
+}

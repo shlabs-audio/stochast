@@ -1,0 +1,146 @@
+{
+  "version": "2.6.0",
+  "zoom": 1.0,
+  "gridOffset": [
+    0.0,
+    0.0
+  ],
+  "modules": [
+    {
+      "id": 1,
+      "plugin": "SHLabs-Methods",
+      "model": "Seed",
+      "version": "2.0.0",
+      "params": [
+        {
+          "value": 0.001001001001001001,
+          "id": 0
+        }
+      ],
+      "pos": [
+        0,
+        0
+      ],
+      "rightModuleId": 2
+    },
+    {
+      "id": 2,
+      "plugin": "SHLabs-Methods",
+      "model": "Sample",
+      "version": "2.0.0",
+      "params": [
+        {
+          "value": 3.0,
+          "id": 3
+        },
+        {
+          "value": 0.1,
+          "id": 4
+        },
+        {
+          "value": 0.1,
+          "id": 5
+        }
+      ],
+      "pos": [
+        20,
+        0
+      ],
+      "leftModuleId": 1,
+      "rightModuleId": 3
+    },
+    {
+      "id": 3,
+      "plugin": "SHLabs-Methods",
+      "model": "Frame",
+      "version": "2.0.0",
+      "params": [
+        {
+          "value": 2.0,
+          "id": 0
+        }
+      ],
+      "pos": [
+        40,
+        0
+      ],
+      "leftModuleId": 2,
+      "rightModuleId": 4
+    },
+    {
+      "id": 4,
+      "plugin": "SHLabs-Methods",
+      "model": "Boot",
+      "version": "2.0.0",
+      "params": [],
+      "pos": [
+        60,
+        0
+      ],
+      "leftModuleId": 3,
+      "rightModuleId": 5
+    },
+    {
+      "id": 5,
+      "plugin": "SHLabs-Methods",
+      "model": "Gauge",
+      "version": "2.0.0",
+      "params": [
+        {
+          "value": 0.1,
+          "id": 0
+        },
+        {
+          "value": 0.0,
+          "id": 1
+        },
+        {
+          "value": 3.0,
+          "id": 2
+        }
+      ],
+      "pos": [
+        80,
+        0
+      ],
+      "data": {
+        "preset": 4
+      },
+      "leftModuleId": 4
+    }
+  ],
+  "cables": [
+    {
+      "id": 101,
+      "outputModuleId": 1,
+      "outputId": 1,
+      "inputModuleId": 2,
+      "inputId": 1,
+      "color": "#ffd13a"
+    },
+    {
+      "id": 102,
+      "outputModuleId": 2,
+      "outputId": 0,
+      "inputModuleId": 3,
+      "inputId": 2,
+      "color": "#3695ef"
+    },
+    {
+      "id": 103,
+      "outputModuleId": 2,
+      "outputId": 0,
+      "inputModuleId": 4,
+      "inputId": 2,
+      "color": "#3695ef"
+    },
+    {
+      "id": 104,
+      "outputModuleId": 3,
+      "outputId": 0,
+      "inputModuleId": 5,
+      "inputId": 0,
+      "color": "#80bf2e"
+    }
+  ]
+}
