@@ -1,17 +1,17 @@
 {
   "slug": "SHLabs-Methods",
   "name": "SHLabs Methods",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "GPL-3.0-or-later",
   "brand": "SHLabs",
   "author": "Kevin Schoenholzer",
   "authorEmail": "kevinschonholzer@gmail.com",
   "authorUrl": "https://kevinschoenholzer.com",
-  "pluginUrl": "https://kevinschoenholzer.com/empiria",
-  "manualUrl": "https://github.com/kevinschoenholzer/empiria/blob/main/docs/modules.md",
-  "sourceUrl": "https://github.com/kevinschoenholzer/empiria",
+  "pluginUrl": "https://shlabs.kevinschoenholzer.com",
+  "manualUrl": "https://github.com/kevisc/empiria/blob/main/docs/modules.md",
+  "sourceUrl": "https://github.com/kevisc/empiria",
   "donateUrl": "",
-  "changelogUrl": "https://github.com/kevinschoenholzer/empiria/blob/main/CHANGELOG.md",
+  "changelogUrl": "https://github.com/kevisc/empiria/blob/main/CHANGELOG.md",
   "modules": [
     {
       "slug": "Strata",

@@ -1,5 +1,16 @@
 # Empiria changelog
 
+## 2.0.1 — 2026-05-19
+
+Metadata-only release in preparation for the VCV Rack Library
+submission. No module behavior changes.
+
+- Fixed `sourceUrl`, `manualUrl`, and `changelogUrl` in all five
+  plugin.json files (previously pointed to a non-existent
+  `kevinschoenholzer/empiria` path; now point to the canonical
+  `kevisc/empiria` repository).
+- Updated `pluginUrl` to <https://shlabs.kevinschoenholzer.com>.
+
 ## 2.0.0 — 2026-05-16
 
 First public release of the Empiria suite for VCV Rack 2. Bundles
