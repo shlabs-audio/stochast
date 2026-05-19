@@ -149,38 +149,38 @@ struct Schelling : Module {
         unhappyFrac = (occupied > 0) ? (float)unhappy / occupied : 0.f;
     }
 
+    // Pre-allocated scratch buffers for stepCA (max kGrid*kGrid cells = 576).
+    // Used in place of per-tick std::vector allocations.
+    std::array<std::pair<int,int>, kGrid * kGrid> unhappyBuf{};
+    std::array<std::pair<int,int>, kGrid * kGrid> emptyBuf{};
+
     void stepCA() {
         float theta = currentTolerance();
-        // Gather unhappy and empty positions
-        std::vector<std::pair<int,int>> unhappy;
-        std::vector<std::pair<int,int>> empty;
-        unhappy.reserve(64);
-        empty.reserve(64);
+        // Gather unhappy and empty positions into pre-allocated arrays.
+        int nU = 0, nE = 0;
         for (int y = 0; y < kGrid; ++y)
             for (int x = 0; x < kGrid; ++x) {
                 if (grid[y][x] < 0) {
-                    empty.push_back({x, y});
+                    emptyBuf[nE++] = {x, y};
                 } else {
                     auto [same, total] = sameAndTotal(x, y);
                     float f = (total > 0) ? (float)same / total : 1.f;
-                    if (f < theta) unhappy.push_back({x, y});
+                    if (f < theta) unhappyBuf[nU++] = {x, y};
                 }
             }
 
-        std::shuffle(unhappy.begin(), unhappy.end(), rng);
-        std::shuffle(empty.begin(), empty.end(), rng);
+        std::shuffle(unhappyBuf.begin(), unhappyBuf.begin() + nU, rng);
+        std::shuffle(emptyBuf.begin(),  emptyBuf.begin()  + nE, rng);
 
         int moves = 0;
-        for (auto& src : unhappy) {
-            if (empty.empty()) break;
-            // Pop the next empty cell
-            auto dst = empty.back();
-            empty.pop_back();
+        for (int u = 0; u < nU && nE > 0; ++u) {
+            auto src = unhappyBuf[u];
+            auto dst = emptyBuf[--nE];
             int8_t typ = grid[src.second][src.first];
             grid[src.second][src.first] = -1;
             grid[dst.second][dst.first] = typ;
-            empty.push_back(src);     // src is now empty
-            std::swap(empty.back(), empty[empty.size() - 1]);
+            // src is now empty; push it back onto the empty buffer.
+            emptyBuf[nE++] = src;
             ++moves;
         }
         movedLastTick = moves;
