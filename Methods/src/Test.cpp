@@ -281,7 +281,21 @@ struct Test : Module {
             float pooledVar = ((n1 - 1) * var1 + (n2 - 1) * var2) / (n1 + n2 - 2);
             float pooledSD = (pooledVar > 1e-12f) ? std::sqrt(pooledVar) : 0.f;
             effectSize = (pooledSD > 1e-9f) ? (m1 - m2) / pooledSD : 0.f;
-            dfCached = n1 + n2 - 2; // approximate
+            // Welch–Satterthwaite degrees of freedom: matches the SE numerator
+            // and yields the correct p-value at unequal variances. Falls back
+            // to the pooled-equal-variance df if either group is too small or
+            // the denominator underflows.
+            float u1 = var1 / std::max(1, n1);
+            float u2 = var2 / std::max(1, n2);
+            float num = (u1 + u2) * (u1 + u2);
+            float den = (n1 > 1 ? (u1 * u1) / (n1 - 1) : 0.f)
+                      + (n2 > 1 ? (u2 * u2) / (n2 - 1) : 0.f);
+            if (den > 1e-12f) {
+                int dfWS = (int)std::round(num / den);
+                dfCached = std::max(1, std::min(dfWS, n1 + n2 - 2));
+            } else {
+                dfCached = n1 + n2 - 2;
+            }
         }
         pValue = tTailTwoSided(tStat, dfCached);
     }

@@ -249,6 +249,27 @@ struct Diffusion : Module {
 
         forwardAdjacencyRight();
     }
+
+    json_t* dataToJson() override {
+        json_t* root = json_object();
+        json_object_set_new(root, "countAdopted", json_integer(countAdopted));
+        json_t* arr = json_array();
+        for (int i = 0; i < kMaxN; ++i)
+            json_array_append_new(arr, json_boolean(adopted[i]));
+        json_object_set_new(root, "adopted", arr);
+        return root;
+    }
+    void dataFromJson(json_t* root) override {
+        if (auto* j = json_object_get(root, "countAdopted"))
+            countAdopted = (int)json_integer_value(j);
+        if (auto* arr = json_object_get(root, "adopted")) {
+            if (json_is_array(arr)) {
+                size_t n = std::min((size_t)kMaxN, json_array_size(arr));
+                for (size_t i = 0; i < n; ++i)
+                    adopted[i] = json_is_true(json_array_get(arr, i));
+            }
+        }
+    }
 };
 
 // ============================================================================

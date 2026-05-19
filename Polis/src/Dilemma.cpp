@@ -288,6 +288,42 @@ struct Dilemma : Module {
         outputs[SUCKER_OUTPUT].setVoltage(s ? 10.f : 0.f);
         lights[SUCKER_LIGHT].setBrightness(s ? 1.f : 0.f);
     }
+
+    json_t* dataToJson() override {
+        json_t* root = json_object();
+        json_object_set_new(root, "roundsPlayed", json_integer(roundsPlayed));
+        json_t* strat = json_array();
+        json_t* score = json_array();
+        for (int i = 0; i < kMaxN; ++i) {
+            json_array_append_new(strat, json_integer(strategies[i]));
+            json_array_append_new(score, json_real(totalScore[i]));
+        }
+        json_object_set_new(root, "strategies", strat);
+        json_object_set_new(root, "totalScore", score);
+        return root;
+    }
+    void dataFromJson(json_t* root) override {
+        if (auto* j = json_object_get(root, "roundsPlayed"))
+            roundsPlayed = (int)json_integer_value(j);
+        if (auto* arr = json_object_get(root, "strategies")) {
+            if (json_is_array(arr)) {
+                size_t n = std::min((size_t)kMaxN, json_array_size(arr));
+                for (size_t i = 0; i < n; ++i) {
+                    json_t* v = json_array_get(arr, i);
+                    if (json_is_integer(v)) strategies[i] = (int)json_integer_value(v);
+                }
+            }
+        }
+        if (auto* arr = json_object_get(root, "totalScore")) {
+            if (json_is_array(arr)) {
+                size_t n = std::min((size_t)kMaxN, json_array_size(arr));
+                for (size_t i = 0; i < n; ++i) {
+                    json_t* v = json_array_get(arr, i);
+                    if (json_is_number(v)) totalScore[i] = (float)json_number_value(v);
+                }
+            }
+        }
+    }
 };
 
 // ============================================================================

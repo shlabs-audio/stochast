@@ -282,8 +282,13 @@ struct SampleView : LightWidget {
             case Sample::DIST_BETA: {
                 if (x <= 0.f || x >= 1.f) return 0.f;
                 // Unnormalized kernel — exact normalization requires Β(α,β);
-                // we rescale by max value below so the curve fits the panel anyway
-                return std::pow(x, p1 - 1.f) * std::pow(1.f - x, p2 - 1.f);
+                // we rescale by max value below so the curve fits the panel
+                // anyway. The kernel x^(α-1) (1-x)^(β-1) diverges at 0 and 1
+                // for α<1 or β<1 (e.g. the "coin flip" preset α=β=0.05). To
+                // keep the visualization legible we clamp the evaluation
+                // away from the endpoints; the sampler itself is unaffected.
+                const float xc = clamp(x, 0.01f, 0.99f);
+                return std::pow(xc, p1 - 1.f) * std::pow(1.f - xc, p2 - 1.f);
             }
         }
         return 0.f;

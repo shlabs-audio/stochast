@@ -162,11 +162,19 @@ struct Network : Module {
     json_t* dataToJson() override {
         json_t* root = json_object();
         json_object_set_new(root, "scaleMode", json_integer(scaleMode));
+        json_object_set_new(root, "seed",      json_integer((json_int_t)seed));
         return root;
     }
     void dataFromJson(json_t* root) override {
         if (json_t* m = json_object_get(root, "scaleMode")) {
             scaleMode = clamp((int)json_integer_value(m), 0, NUM_SCALES - 1);
+        }
+        if (json_t* s = json_object_get(root, "seed")) {
+            seed = (uint32_t)json_integer_value(s);
+            // Force a regenerate on the next process() tick by invalidating
+            // the prevSeed sentinel — that way the downstream Diffusion /
+            // Outbreak sees the same graph the user saved.
+            prevSeed = ~seed;
         }
     }
 

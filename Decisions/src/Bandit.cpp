@@ -142,7 +142,11 @@ struct Bandit : Module {
     }
 
     int selectUCB() {
-        // Initialize: pull each arm once before computing bonuses
+        // Classical UCB1 (Auer, Cesa-Bianchi & Fischer 2002):
+        //   pick argmax_i  q_i + c · sqrt( 2 · ln t / n_i )
+        // The factor of 2 is part of the published bound. The EPSILON_PARAM
+        // knob acts as an additional explore multiplier `c`; default c = 1.f
+        // recovers the textbook bonus, c < 1 explores less, c > 1 more.
         for (int i = 0; i < K; ++i) if (count[i] == 0) return i;
         float c = clamp(params[EPSILON_PARAM].getValue(), 0.f, 5.f);
         float lnT = std::log((float)totalPulls + 1.f);
@@ -150,7 +154,7 @@ struct Bandit : Module {
         int best = 0;
         for (int i = 0; i < K; ++i) {
             float q = (float)(sumR[i] / count[i]);
-            float bonus = c * std::sqrt(lnT / count[i]);
+            float bonus = c * std::sqrt(2.f * lnT / count[i]);
             float u = q + bonus;
             if (u > bestU) { bestU = u; best = i; }
         }
@@ -158,12 +162,19 @@ struct Bandit : Module {
     }
 
     int selectThompson() {
-        // Normal posterior with empirical variance estimate ~ 1/N
+        // Thompson sampling under a Normal–Normal model: each arm's true
+        // mean μ_i is drawn from a Normal posterior with mean = sample mean
+        // q_i and standard deviation that shrinks as 1/sqrt(n_i). Because the
+        // reward signal is real-valued (not Bernoulli), a Beta posterior is
+        // not the right conjugate; the Gaussian heuristic implemented here
+        // is the pragmatic choice for the Gaussian-reward regime that
+        // Empiria uses. Cold-start prior strength is kInitialSD.
+        constexpr float kInitialSD = 5.f;
         float bestS = -1e18f;
         int best = 0;
         for (int i = 0; i < K; ++i) {
-            float q = (count[i] > 0) ? (float)(sumR[i] / count[i]) : 0.f;
-            float sd = (count[i] > 0) ? 1.f / std::sqrt((float)count[i]) : 5.f;
+            float q  = (count[i] > 0) ? (float)(sumR[i] / count[i]) : 0.f;
+            float sd = (count[i] > 0) ? 1.f / std::sqrt((float)count[i]) : kInitialSD;
             std::normal_distribution<float> nd(q, sd);
             float s = nd(rng);
             if (s > bestS) { bestS = s; best = i; }

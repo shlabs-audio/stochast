@@ -80,7 +80,7 @@ struct Cascade : Module {
         configParam(PRESSURE_PARAM, 0.f, 1.f, 0.30f, "External pressure");
         configParam(INFLUENCE_PARAM, 0.f, 1.5f, 0.55f, "Social influence (peer feedback weight α)");
         configButton(SHUFFLE_PARAM, "Re-draw thresholds (resets activations)");
-        configInput(CLOCK_INPUT,        "Clock (free-runs at 8 Hz if unpatched)");
+        configInput(CLOCK_INPUT,        "Clock (free-runs at 30 Hz if unpatched)");
         configInput(RESET_INPUT,        "Reset");
         configInput(PRESSURE_CV_INPUT,  "Pressure CV (0..10 V adds to knob)");
         configOutput(ACTIVE_OUTPUT,     "Active fraction (0..10 V)");
@@ -116,12 +116,39 @@ struct Cascade : Module {
     json_t* dataToJson() override {
         json_t* root = json_object();
         json_object_set_new(root, "mode", json_integer(mode));
+        // Persist per-agent thresholds + activation states so a saved
+        // cascade resumes from the exact configuration the user saved.
+        json_t* thr = json_array();
+        json_t* act = json_array();
+        for (int i = 0; i < kMaxN; ++i) {
+            json_array_append_new(thr, json_real(thresholds[i]));
+            json_array_append_new(act, json_boolean(active[i]));
+        }
+        json_object_set_new(root, "thresholds", thr);
+        json_object_set_new(root, "active",     act);
         return root;
     }
     void dataFromJson(json_t* root) override {
         if (json_t* m = json_object_get(root, "mode")) {
             mode = (int)json_integer_value(m);
         }
+        if (auto* arr = json_object_get(root, "thresholds")) {
+            if (json_is_array(arr)) {
+                size_t n = std::min((size_t)kMaxN, json_array_size(arr));
+                for (size_t i = 0; i < n; ++i) {
+                    json_t* v = json_array_get(arr, i);
+                    if (json_is_number(v)) thresholds[i] = (float)json_number_value(v);
+                }
+            }
+        }
+        if (auto* arr = json_object_get(root, "active")) {
+            if (json_is_array(arr)) {
+                size_t n = std::min((size_t)kMaxN, json_array_size(arr));
+                for (size_t i = 0; i < n; ++i)
+                    active[i] = json_is_true(json_array_get(arr, i));
+            }
+        }
+        activeFrac = (N > 0) ? (float)countActive() / N : 0.f;
     }
 
     int countActive() const {
@@ -452,7 +479,7 @@ struct CascadeWidget : ModuleWidget {
             {"Granovetter-style threshold model of collective action.",
              "Agents each have a personal threshold; an agent activates",
              "when the share already active exceeds their threshold."},
-            "Network (supply structure), Diffusion (SIR-style variant)");
+            "Diffusion (SIR-style variant), Tape (record fraction-active).");
     }
 };
 
