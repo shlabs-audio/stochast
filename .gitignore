@@ -1,0 +1,44 @@
+# macOS
+.DS_Store
+
+# VCV Rack plugin build artifacts
+build/
+dist/
+*.vcvplugin
+
+# LaTeX intermediate files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# -----------------------------------------------------------------
+# Submission package — review-process artifacts kept locally only.
+# These are addressed to the JSDSE editor / reviewers and are not
+# part of the open-source release.
+# -----------------------------------------------------------------
+submission/cover_letter.md
+submission/cover_letter.pdf
+submission/suggested_reviewers.md
+submission/SUBMISSION_CHECKLIST.md
+submission/highlights_keywords.md
+submission/title_page.md
+submission/title_page.pdf
+submission/jsdse_latex_source.zip
+
+# Anonymous-variant build artifacts (only useful during double-anonymous review)
+submission/manuscript_anonymized.md
+submission/manuscript_anonymized.pdf
+submission/jsdse_latex/_body_anonymous.tex
+submission/jsdse_latex/empiria_anonymous.tex
+submission/jsdse_latex/empiria_anonymous.pdf

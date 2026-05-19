@@ -52,7 +52,7 @@ abstract: |
 # Summary
 
 We describe the **Methods** plugin of **Empiria**, an open-source
-teaching suite for **VCV Rack** [@vcv-rack], the free
+teaching suite for **VCV Rack** (VCV Rack, 2024), the free
 modular-synthesizer environment. Methods comprises fifteen modules
 that, taken together, expose a full statistical workflow —
 data-generating process → sample-window measurement → estimation →
@@ -64,13 +64,13 @@ inference → diagnostics → reporting — as patch cables on a rack:
 | Frame     | Sample-window measurement (mean, SD, SE)   |
 | Regress   | Online OLS with confidence band            |
 | Test      | One/two-sample *t*-test, exact *p*-value   |
-| Boot      | Non-parametric (BCa) bootstrap [@efron1987]|
+| Boot      | Non-parametric (BCa) bootstrap (Efron, 1987)|
 | Lag       | Autocorrelation with Bartlett bands        |
 | Code      | Continuous → ordinal Likert encoder        |
 | Tab       | Contingency table with χ² and Cramér's V   |
 | Strata    | STL trend / seasonal / residual decomposition |
 | Cohort    | Online *k*-means quantizer                 |
-| Factor    | Online PCA (Sanger's rule) [@sanger1989]   |
+| Factor    | Online PCA (Sanger's rule) (Sanger, 1989)   |
 | Seed      | Reproducibility primitive                  |
 | Tape      | Polyphonic record-and-replay + CSV export  |
 | Gauge     | CV → real-world units interpreter          |
@@ -86,11 +86,11 @@ learner manipulate parameters in real time; shared input/output
 conventions (clock, reset, polyphony) allow modules to compose
 left-to-right into multi-step inferential pipelines. The
 pedagogical intent is consistent with the GAISE / Cobb / Tintle
-recommendation [@cobb2007; @gaise2016; @tintle2014] that
+recommendation (Cobb, 2007; American Statistical Association, 2016; Tintle et al., 2015) that
 introductory statistics be reorganized around simulation-based
 reasoning rather than closed-form, normal-theory derivation: a
 student does not merely read about a sampling distribution or a
-bootstrap interval [@efron1979], but builds one, observes its
+bootstrap interval (Efron, 1979), but builds one, observes its
 sample-by-sample evolution, and patches the result into a
 downstream analytical module.
 
@@ -108,9 +108,8 @@ social-science community.
 A sustained line of statistics-education research has documented the
 difficulty students experience in forming durable intuitions about
 sampling variability, the sampling distribution of an estimator, and
-the logic of inferential reasoning [@chance2004; @delmas2007;
-@garfield2009]. Cobb's influential analysis of the introductory
-statistics curriculum [@cobb2007] argued that the discipline has
+the logic of inferential reasoning (Chance et al., 2004; delMas et al., 2007; Garfield & Ben-Zvi, 2009). Cobb's influential analysis of the introductory
+statistics curriculum (Cobb, 2007) argued that the discipline has
 overemphasized closed-form, normal-theory derivations at the
 expense of randomization-based and simulation-based approaches in
 which the sampling distribution is constructed empirically before
@@ -118,11 +117,11 @@ it is named. Subsequent empirical work has shown that
 simulation-based curricula deliver measurable improvements on
 standardized assessments of statistical reasoning, particularly on
 items concerning the meaning of *p*-values and confidence intervals
-[@tintle2014]. The Guidelines for Assessment and Instruction in
+(Tintle et al., 2015). The Guidelines for Assessment and Instruction in
 Statistics Education (GAISE) College Report makes the corresponding
 recommendation explicit: foster active learning, use real data,
 integrate technology, and emphasize statistical thinking
-[@gaise2016]. Empiria is designed against this background — not as a
+(American Statistical Association, 2016). Empiria is designed against this background — not as a
 replacement for analytical statistical software, but as a
 complementary, simulation-first interface that makes the elementary
 operations of sampling, estimation, and inference manipulable
@@ -131,18 +130,18 @@ through direct interaction.
 The substantive content of the social-science curriculum suffers
 from an analogous problem of representation. Macro-level phenomena
 that motivate the field — Granovetter's threshold cascades
-[@granovetter1978], Deffuant–Weisbuch bounded-confidence opinion
-dynamics [@deffuant2000], wealth condensation in the yard-sale
-exchange model [@chakraborti2002; @boghosian2014], iterated
-Prisoner's Dilemma tournaments [@axelrod1984], Bass innovation
-diffusion [@bass1969; @rogers2003], Schelling segregation
-[@schelling1971], and SIR-style epidemiological spread
-[@kermack1927; @newman2002] — are all *generative processes* that
+(Granovetter, 1978), Deffuant–Weisbuch bounded-confidence opinion
+dynamics (Deffuant et al., 2000), wealth condensation in the yard-sale
+exchange model (Chakraborti, 2002; Boghosian, 2014), iterated
+Prisoner's Dilemma tournaments (Axelrod, 1984), Bass innovation
+diffusion (Bass, 1969; Rogers, 2003), Schelling segregation
+(Schelling, 1971), and SIR-style epidemiological spread
+(Kermack & McKendrick, 1927; Newman, 2002) — are all *generative processes* that
 unfold over time and reward parametric exploration. A still figure
 in a textbook conveys the equilibrium but elides the trajectory; a
 dynamic visualization lets the student attend to the trajectory
 directly. The generative-social-science research program of
-@epstein2006 makes precisely this case at the methodological level:
+Epstein (2006) makes precisely this case at the methodological level:
 the explanatory force of an agent-based model lies in the *act* of
 generation, which a static diagram cannot convey.
 
@@ -167,19 +166,19 @@ that distinguish it from applet-style teaching tools. First,
 **deterministic seeding**: every random draw is produced by a
 Mersenne-Twister RNG with an explicit, user-visible seed exposed
 on the panel through the dedicated `Seed` module
-[@matsumoto1998]. Patches share their seed in plain JSON, so a
+(Matsumoto & Nishimura, 1998). Patches share their seed in plain JSON, so a
 worked example travels byte-identically between machines.
 Second, **named numerical recipes** for every closed-form
 quantity: the two-tailed *p*-value of a *t*-test is evaluated
 *exactly* through the regularized incomplete beta function via
-Lentz's continued-fraction expansion [@press2007] rather than as
+Lentz's continued-fraction expansion (Press et al., 2007) rather than as
 a Gaussian approximation; the χ² *p*-value uses the corresponding
 regularized incomplete gamma function; the bootstrap interval is
 Efron's bias-corrected and accelerated (BCa) interval
-[@efron1987] with on-panel *z*₀ and *â* diagnostics; online PCA
-follows Sanger's rule [@sanger1989] with explicit Gram-Schmidt
+(Efron, 1987) with on-panel *z*₀ and *â* diagnostics; online PCA
+follows Sanger's rule (Sanger, 1989) with explicit Gram-Schmidt
 re-normalization; STL decomposition follows Cleveland et al.
-[@cleveland1990]. Third, **portable artifacts**: a `.vcv` patch
+(Cleveland et al., 1990). Third, **portable artifacts**: a `.vcv` patch
 is a plain-JSON record of every parameter and every cable, with
 no platform-specific binary state, no library-version drift, and
 no floating-point-rounding skew between operating systems. A
@@ -212,22 +211,21 @@ statistics can use the same modules, together with `Regress`,
 will later carry out in R or Python. A graduate methods seminar can
 use the platform as a sandbox for prototyping data-generating
 processes, exploring small-sample *t*-distribution behavior, or
-comparing bias-corrected and accelerated [@efron1987] bootstrap
+comparing bias-corrected and accelerated (Efron, 1987) bootstrap
 confidence intervals against analytical alternatives. The same
 modules, the same knobs, and the same outputs serve all three
 audiences; what differs is the depth at which the instructor or
 learner chooses to interrogate the underlying mathematics.
 
-Existing simulation-based teaching tools — NetLogo [@wilensky1999]
+Existing simulation-based teaching tools — NetLogo (Wilensky, 1999)
 for agent-based models, *Sampling SIM* and related visualizations
-in the statistics-education literature [@chance2004; @delmas2007]
+in the statistics-education literature (Chance et al., 2004; delMas et al., 2007)
 for sampling distributions, *Tinkerplots* and *CODAP* for
-exploratory data analysis with younger learners [@konold2008;
-@finzer2013], and a wide variety of R Shiny applets for specific
+exploratory data analysis with younger learners (Konold & Lehrer, 2008; Finzer, 2013), and a wide variety of R Shiny applets for specific
 inferential techniques — are typically *siloed*: each tool, applet,
 or notebook addresses one concept in isolation, and the output of
 one applet cannot be piped into another. The modular-synthesizer
-paradigm of VCV Rack [@vcv-rack] — voltage-level signal flow,
+paradigm of VCV Rack (VCV Rack, 2024) — voltage-level signal flow,
 clocked sampling, polyphony, and real-time visualization — is
 natively suited to *compose* such models, both with each other and
 with the methodological infrastructure that subjects them to
@@ -253,18 +251,17 @@ statistics-education and mathematical-cognition literatures.
 
 **Dynamic, manipulable visualization supports the construction of
 sampling-distribution intuitions.** A consistent finding across the
-statistics-education research program of @chance2004,
-@delmas2007, and @garfield2009 is that students who manipulate
+statistics-education research program of Chance et al. (2004), delMas et al. (2007), and Garfield & Ben-Zvi (2009) is that students who manipulate
 parameters and observe the resulting changes in sampling
 distributions in real time develop more durable inferential
 intuitions than students who encounter the same material as static
 textbook figures. The pedagogical principle is consistent with the
 broader cognitive-load theory of multimedia learning developed by
-@mayer2009: animation and learner control reduce extraneous load
+Mayer (2009): animation and learner control reduce extraneous load
 relative to text and static images when the underlying concept is
 itself dynamic. The same shift of attention — from *the number that
 comes out* to *the process that produced it* — was anticipated by
-@tukey1962 in his programmatic call for an exploratory, generative
+Tukey (1962) in his programmatic call for an exploratory, generative
 re-orientation of data analysis. Empiria adopts this principle
 throughout its design: every parameter is a knob, every estimator
 is a control-voltage trace, and every confidence interval is a band
@@ -275,12 +272,12 @@ sample.
 A long line of work in mathematical cognition argues that abstract
 inferential concepts are most reliably learned when students first
 encounter them as *enacted processes* and only later as algebraic
-statements. @bruner1966 articulated the enactive → iconic →
+statements. Bruner (1966) articulated the enactive → iconic →
 symbolic progression at the level of general theory of instruction;
-@sfard1991 framed the same trajectory as the duality between
+Sfard (1991) framed the same trajectory as the duality between
 operational (process) and structural (object) conceptions of a
 mathematical idea, with the operational stage temporally preceding
-the structural; @vergnaud2009's theory of conceptual fields
+the structural; Vergnaud's (2009) theory of conceptual fields
 emphasises situated, schema-based learning of mathematical
 structures through repeated interaction with concrete instances.
 Empiria's patch grammar makes this sequence explicit and
@@ -303,7 +300,7 @@ page whose output cannot be piped into another demonstration. This
 fragmentation is consequential, because the
 data-generating-process → sampling → estimation → inference
 workflow is precisely the abstract structure students need to
-internalize [@cobb2007; @tintle2014]. A tool that fragments that
+internalize (Cobb, 2007; Tintle et al., 2015). A tool that fragments that
 workflow across many applets makes the structure invisible.
 Empiria's signal-flow paradigm restores composition at the level of
 the platform: the output of any module is a control voltage that
@@ -315,10 +312,10 @@ intermediate value is observable in real time.
 
 Empiria's nearest neighbours in the statistics-education tool
 ecosystem are *Sampling SIM* and the related sampling-distribution
-visualizations described in @chance2004 and @delmas2007;
-*Tinkerplots* [@konold2008] for school-level exploratory data
+visualizations described in Chance et al. (2004) and delMas et al. (2007);
+*Tinkerplots* (Konold & Lehrer, 2008) for school-level exploratory data
 analysis; and the Concord Consortium's *Common Online Data Analysis
-Platform* (CODAP), positioned by @finzer2013 for younger-student
+Platform* (CODAP), positioned by Finzer (2013) for younger-student
 data-science instruction. Each of these tools is highly effective
 in its specific domain — *Sampling SIM* for sampling distributions,
 *Tinkerplots* for exploratory analysis, *CODAP* for data-handling
@@ -336,12 +333,12 @@ separate applications; a *Discourse* simulator's polyphonic state
 can flow directly into a *Frame* sampling-window module without
 file export, copy-paste, or context-switching. Third, it leverages
 an existing open-source creative-software ecosystem — VCV Rack
-[@vcv-rack] — whose user community already understands the
+(VCV Rack, 2024) — whose user community already understands the
 modular-cable interface, lowering the activation cost for adoption.
 
-For agent-based modeling specifically, *NetLogo* [@wilensky1999]
+For agent-based modeling specifically, *NetLogo* (Wilensky, 1999)
 remains the dominant teaching tool, and a substantial body of
-pedagogical material has been developed around it [@epstein2006].
+pedagogical material has been developed around it (Epstein, 2006).
 Empiria does not aim to displace NetLogo for the dedicated
 agent-based-modeling course; rather, the Polis plugin offers a
 selected subset of canonical models embedded within a wider
@@ -368,21 +365,21 @@ makes it useful for teaching.
 
 The convention is not a synth-builder's aesthetic; it is a direct
 inheritance from the analog computers of the 1930s–1960s. Machines
-such as Vannevar Bush's Differential Analyzer [@bush1931] solved
+such as Vannevar Bush's Differential Analyzer (Bush, 1931) solved
 differential equations by letting voltages, currents, or mechanical
 rotations represent state variables, with operational amplifiers
 and integrators implementing the operators that combined them. The
 analog computers of this period were used to model missile
 trajectories, weather systems, electrical-grid stability,
 predator–prey population dynamics, and the spread of epidemics
-[@small2001] — substantive applications that overlap substantially
+(Small, 2001) — substantive applications that overlap substantially
 with Empiria's pedagogical scope. The argument here is not
 historical nostalgia. The point is that voltage proved to be a
 remarkably general representation of state, and that operating on
 voltage with electrical components proved to be a remarkably
 general way to compute. Digital simulation of those same continuous
 voltages — which is what VCV Rack does, at audio sample rate
-[@vcv-rack] — inherits the same generality at a fraction of the
+(VCV Rack, 2024) — inherits the same generality at a fraction of the
 cost and without the calibration overhead that constrained the
 physical analog computers.
 
@@ -540,7 +537,7 @@ against H₀: μ = μ₀ (one-sample) or H₀: μ₁ − μ₂ = δ₀ (two-samp
 Welch's *t* for unequal variances). The two-tailed *p*-value is
 evaluated *exactly* via the regularized incomplete beta function
 *I*(*x*; *a*, *b*) using Lentz's continued-fraction expansion
-[@press2007], following the standard numerical recipe. The live
+(Press et al., 2007), following the standard numerical recipe. The live
 visualization draws the *t*-distribution null with shaded rejection
 regions at the user-selected α (0.01, 0.05, 0.10), marks the
 observed *t* as a vertical line, and shows a *REJECT* / *n.s.*
@@ -568,7 +565,7 @@ user-selectable statistic (mean, median, SD, variance) on each, so
 the *empirical bootstrap distribution* of the estimator becomes
 visible on the panel — *this is* the sampling distribution made
 explicit, without parametric assumption. The bias-corrected and
-accelerated (BCa) interval [@efron1987] is reported alongside the
+accelerated (BCa) interval (Efron, 1987) is reported alongside the
 point estimate and the bootstrap SE; the panel also shows the
 bias-correction *z*₀ and the acceleration *â* as live readouts, so
 a student can watch the BCa correction shift the interval away
@@ -589,10 +586,10 @@ per-parameter, per-input, per-output detail in the project manual
 |-----------|-------------------------------------------------------------------|
 | **Lag**    | Autocorrelation ρ(*k*) with Bartlett ±1.96 / √*n* bands           |
 | **Code**   | Continuous → ordinal Likert encoder (*K* = 2..7)                  |
-| **Tab**    | Contingency table with χ², Cramér's V, exact χ² *p* [@press2007]  |
-| **Strata** | STL trend / seasonal / residual decomposition [@cleveland1990]    |
+| **Tab**    | Contingency table with χ², Cramér's V, exact χ² *p* (Press et al., 2007)  |
+| **Strata** | STL trend / seasonal / residual decomposition (Cleveland et al., 1990)    |
 | **Cohort** | Online *k*-means quantizer                                        |
-| **Factor** | Online PCA via Sanger's rule on six inputs [@sanger1989]          |
+| **Factor** | Online PCA via Sanger's rule on six inputs (Sanger, 1989)          |
 | **Seed**   | Reproducibility primitive: integer seed as CV + change-trigger    |
 | **Tape**   | Polyphonic record-and-replay; right-click CSV export              |
 | **Gauge**  | Linear CV → real-world units (output side)                        |
@@ -643,7 +640,7 @@ statistical relationships, and simulated dynamical systems on
 *analog* machines whose state variables were continuous physical
 quantities — currents, voltages, mechanical rotations — and whose
 "programs" were the wired interconnections between specialized
-function units [@small2001]. Vannevar Bush's Differential
+function units (Small, 2001). Vannevar Bush's Differential
 Analyzer, the Bell Labs *X-66* electronic differential analyzer,
 and the chemical-plant trainers of the 1950s all share the same
 generative grammar that VCV Rack inherits: patch cables route
@@ -681,7 +678,7 @@ expected of research-grade computational software.
 
 * **Deterministic, seeded pseudo-random number generation.**
   Every random module wraps a `std::mt19937` Mersenne Twister
-  [@matsumoto1998], initialized from a per-module 32-bit seed
+  (Matsumoto & Nishimura, 1998), initialized from a per-module 32-bit seed
   preserved in the patch JSON and broadcast on demand by the
   `Seed` module. The Mersenne Twister has period 2¹⁹⁹³⁷ − 1 and
   is equidistributed in 623 dimensions, far in excess of any
@@ -698,7 +695,7 @@ expected of research-grade computational software.
     - The `Test` module's Student-*t* survival function uses the
       regularized incomplete beta function evaluated via Lentz's
       modified continued fraction, following the algorithmic
-      treatment in @press2007. This is the same algorithm
+      treatment in Press et al. (2007). This is the same algorithm
       underlying R's `pt()` and SciPy's `scipy.stats.t.sf()`, and
       yields machine-precision agreement with both at any df ≥ 1.
     - The `Tab` module's χ² upper-tail uses the regularized lower
@@ -707,16 +704,16 @@ expected of research-grade computational software.
       fraction otherwise), matching R's `pchisq(..., lower.tail =
       FALSE)` to machine precision.
     - The `Boot` module's confidence intervals are
-      bias-corrected and accelerated (BCa) [@efron1987] rather
+      bias-corrected and accelerated (BCa) (Efron, 1987) rather
       than percentile-only, with the bias-correction *z*₀ and
       jackknife-based acceleration *â* surfaced on the panel for
       diagnostic transparency.
     - The `Factor` module's online PCA implements Sanger's
-      generalised Hebbian algorithm [@sanger1989] followed by
+      generalised Hebbian algorithm (Sanger, 1989) followed by
       explicit Gram-Schmidt re-normalization after each update
       for numerical stability.
     - The `Strata` module follows the STL decomposition of
-      Cleveland et al. [@cleveland1990] for separating trend,
+      Cleveland et al. (1990) for separating trend,
       seasonal, and residual components.
 
 * **Portable artifacts and cross-platform reproducibility.**
@@ -726,7 +723,7 @@ expected of research-grade computational software.
   operating systems running the same patch with the same seed
   produce three byte-identical CSV files. This meets the
   standard of computational reproducibility expected of
-  research-grade software [@cobb2007] and exceeds what most
+  research-grade software (Cobb, 2007) and exceeds what most
   notebook-based teaching workflows can claim, since `.vcv`
   patches have no external library-version dependencies whose
   silent updates might shift a numeric result. In this sense a
@@ -886,7 +883,7 @@ Workflows A and B exhibit Empiria's pedagogical surface; Workflow
 C is the *rigor proof*. The simulation-based-inference literature
 recommends that learners construct empirical sampling
 distributions and *check them against closed-form values where
-both are available* [@cobb2007; @tintle2014]; doing so is also
+both are available* (Cobb, 2007; Tintle et al., 2015); doing so is also
 the standard way to validate that a computational instrument
 behaves as advertised. We therefore close the worked examples
 with a verification exercise: pick a probabilistic quantity with
@@ -1306,3 +1303,72 @@ GPL-3.0 license. Correspondence and feedback are welcome at the
 author's academic website, *kevinschoenholzer.com*.
 
 # References
+
+American Statistical Association. (2016). *GAISE College Report 2016: Guidelines for Assessment and Instruction in Statistics Education*. <https://www.amstat.org/education/curriculum-guidelines-for-undergraduate-programs-in-statistical-science->
+
+Axelrod, R. (1984). *The Evolution of Cooperation*. Basic Books.
+
+Bass, F. M. (1969). A new product growth for model consumer durables. *Management Science*, 15(5), 215–227. <https://doi.org/10.1287/mnsc.15.5.215>
+
+Boghosian, B. M. (2014). Kinetics of wealth and the Pareto law. *Physical Review E*, 89(4), 042804. <https://doi.org/10.1103/PhysRevE.89.042804>
+
+Bruner, J. S. (1966). *Toward a Theory of Instruction*. Harvard University Press.
+
+Bush, V. (1931). The differential analyzer. A new machine for solving differential equations. *Journal of the Franklin Institute*, 212(4), 447–488. <https://doi.org/10.1016/S0016-0032(31)90616-9>
+
+Chakraborti, A. (2002). Distributions of money in model markets of economy. *International Journal of Modern Physics C*, 13(10), 1315–1321. <https://doi.org/10.1142/S0129183102003905>
+
+Chance, B., delMas, R., & Garfield, J. (2004). Reasoning about sampling distributions. In D. Ben-Zvi & J. Garfield (Eds.), *The Challenge of Developing Statistical Literacy, Reasoning, and Thinking* (pp. 295–323). Springer. <https://doi.org/10.1007/1-4020-2278-6_13>
+
+Cleveland, R. B., Cleveland, W. S., McRae, J. E., & Terpenning, I. (1990). STL: A seasonal-trend decomposition procedure based on Loess. *Journal of Official Statistics*, 6(1), 3–73.
+
+Cobb, G. W. (2007). The introductory statistics course: A Ptolemaic curriculum? *Technology Innovations in Statistics Education*, 1(1). <https://doi.org/10.5070/T511000028>
+
+Deffuant, G., Neau, D., Amblard, F., & Weisbuch, G. (2000). Mixing beliefs among interacting agents. *Advances in Complex Systems*, 3(01n04), 87–98. <https://doi.org/10.1142/S0219525900000078>
+
+delMas, R., Garfield, J., Ooms, A., & Chance, B. (2007). Assessing students' conceptual understanding after a first course in statistics. *Statistics Education Research Journal*, 6(2), 28–58. <https://doi.org/10.52041/serj.v6i2.483>
+
+Efron, B. (1979). Bootstrap methods: Another look at the jackknife. *The Annals of Statistics*, 7(1), 1–26. <https://doi.org/10.1214/aos/1176344552>
+
+Efron, B. (1987). Better bootstrap confidence intervals. *Journal of the American Statistical Association*, 82(397), 171–185. <https://doi.org/10.1080/01621459.1987.10478410>
+
+Epstein, J. M. (2006). *Generative Social Science: Studies in Agent-Based Computational Modeling*. Princeton University Press.
+
+Finzer, W. (2013). The data science education dilemma. *Technology Innovations in Statistics Education*, 7(2). <https://doi.org/10.5070/T572013891>
+
+Garfield, J., & Ben-Zvi, D. (2009). Helping students develop statistical reasoning: Implementing a statistical reasoning learning environment. *Teaching Statistics*, 31(3), 72–77. <https://doi.org/10.1111/j.1467-9639.2009.00363.x>
+
+Granovetter, M. (1978). Threshold models of collective behavior. *American Journal of Sociology*, 83(6), 1420–1443. <https://doi.org/10.1086/226707>
+
+Kermack, W. O., & McKendrick, A. G. (1927). A contribution to the mathematical theory of epidemics. *Proceedings of the Royal Society A*, 115(772), 700–721. <https://doi.org/10.1098/rspa.1927.0118>
+
+Konold, C., & Lehrer, R. (2008). Technology and mathematics education: An essay in honor of Jim Kaput. In L. D. English (Ed.), *Handbook of International Research in Mathematics Education*. Routledge.
+
+Matsumoto, M., & Nishimura, T. (1998). Mersenne Twister: A 623-dimensionally equidistributed uniform pseudo-random number generator. *ACM Transactions on Modeling and Computer Simulation*, 8(1), 3–30. <https://doi.org/10.1145/272991.272995>
+
+Mayer, R. E. (2009). *Multimedia Learning* (2nd ed.). Cambridge University Press. <https://doi.org/10.1017/CBO9780511811678>
+
+Newman, M. E. J. (2002). Spread of epidemic disease on networks. *Physical Review E*, 66(1), 016128. <https://doi.org/10.1103/PhysRevE.66.016128>
+
+Press, W. H., Teukolsky, S. A., Vetterling, W. T., & Flannery, B. P. (2007). *Numerical Recipes: The Art of Scientific Computing* (3rd ed.). Cambridge University Press.
+
+Rogers, E. M. (2003). *Diffusion of Innovations* (5th ed.). Free Press.
+
+Sanger, T. D. (1989). Optimal unsupervised learning in a single-layer linear feedforward neural network. *Neural Networks*, 2(6), 459–473. <https://doi.org/10.1016/0893-6080(89)90044-0>
+
+Schelling, T. C. (1971). Dynamic models of segregation. *Journal of Mathematical Sociology*, 1(2), 143–186. <https://doi.org/10.1080/0022250X.1971.9989794>
+
+Sfard, A. (1991). On the dual nature of mathematical conceptions: Reflections on processes and objects as different sides of the same coin. *Educational Studies in Mathematics*, 22(1), 1–36. <https://doi.org/10.1007/BF00302715>
+
+Small, J. S. (2001). *The Analogue Alternative: The Electronic Analogue Computer in Britain and the USA, 1930–1975*. Routledge.
+
+Tintle, N., Chance, B., Cobb, G., Roy, S., Swanson, T., & VanderStoep, J. (2015). Combating anti-statistical thinking using simulation-based methods throughout the undergraduate curriculum. *The American Statistician*, 69(4), 362–370. <https://doi.org/10.1080/00031305.2015.1081619>
+
+Tukey, J. W. (1962). The future of data analysis. *The Annals of Mathematical Statistics*, 33(1), 1–67. <https://doi.org/10.1214/aoms/1177704711>
+
+VCV Rack contributors. (2024). *VCV Rack: An open-source modular synthesizer environment*. <https://vcvrack.com/>
+
+Vergnaud, G. (2009). The theory of conceptual fields. *Human Development*, 52(2), 83–94. <https://doi.org/10.1159/000202727>
+
+Wilensky, U. (1999). *NetLogo*. Center for Connected Learning and Computer-Based Modeling, Northwestern University. <http://ccl.northwestern.edu/netlogo/>
+
