@@ -42,3 +42,10 @@ submission/manuscript_anonymized.pdf
 submission/jsdse_latex/_body_anonymous.tex
 submission/jsdse_latex/empiria_anonymous.tex
 submission/jsdse_latex/empiria_anonymous.pdf
+
+# -----------------------------------------------------------------
+# Internal workflow / design docs — kept locally only.
+# -----------------------------------------------------------------
+LIBRARY_SUBMISSION.md
+docs/design_spec.md
+docs/design_notes/

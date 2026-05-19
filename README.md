@@ -63,15 +63,12 @@ For a guided tour, see the [Methods plugin manual](docs/methods_manual.md).
   per-module reference for every Methods module: parameters, inputs,
   outputs, lights, visualizations, right-click options, implementation
   notes. PDF: [docs/methods_manual.pdf](docs/methods_manual.pdf).
-- **Design notes.** [docs/design_notes/](docs/design_notes/) — internal
-  rationale on the panel grammar, the family-stripe convention, the
-  on-panel annotation overlay roadmap, and so on.
-- **Submission package.** [submission/](submission/) — JSDSE-ready
-  manuscript bundle: cover letter, title page, anonymized + non-anonymous
-  PDFs, suggested reviewers, LaTeX source zip, submission checklist.
-- **VCV Library submission.** [LIBRARY_SUBMISSION.md](LIBRARY_SUBMISSION.md)
-  — per-plugin checklist for registering each `.vcvplugin` with the
-  official VCV Rack Library.
+- **Compiled paper.** [submission/jsdse_latex/empiria.pdf](submission/jsdse_latex/empiria.pdf)
+  — the JSDSE-ready PDF build of [paper.md](paper.md), produced from
+  the LaTeX sources in [`submission/jsdse_latex/`](submission/jsdse_latex/)
+  ([empiria.tex](submission/jsdse_latex/empiria.tex),
+  [_body.tex](submission/jsdse_latex/_body.tex), and
+  [paper.bib](paper.bib)).
 
 ---
 
