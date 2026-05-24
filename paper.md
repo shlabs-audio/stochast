@@ -1,13 +1,13 @@
 ---
-title: 'Empiria: A Modular-Synthesizer Platform for Simulation-Based Statistics Education'
-short_title: 'Empiria for Statistics Education'
+title: 'Stochast: Statistically Grounded Generative Modules for VCV Rack'
+short_title: 'Stochast'
 tags:
-  - statistics education
-  - data science pedagogy
-  - sampling distributions
+  - modular synthesis
+  - generative music
+  - control voltage
+  - stochastic processes
+  - agent-based models
   - bootstrap
-  - simulation-based inference
-  - open educational software
   - VCV Rack
 authors:
   - name: Kevin Schoenholzer
@@ -22,66 +22,56 @@ date: 15 May 2026
 bibliography: paper.bib
 
 abstract: |
-  Statistics education has long been urged to center on
-  simulation-based reasoning rather than closed-form normal-theory
-  derivation, yet the dominant computational vehicles — scripting in
-  R or Python, single-purpose web applets — still hide the
-  data-generating process and the inferential apparatus behind
-  opaque function calls. We describe the Methods plugin of Empiria,
-  an open-source (GPL-3.0) suite for VCV Rack 2 that repurposes the
-  modular-synthesizer environment as a live patch-cable surface for
-  inferential reasoning. Five anchor modules — Sample, Frame,
-  Regress, Test, Boot — and ten supporting modules together compose
-  a full inferential pipeline as a left-to-right signal chain on
-  screen: a parametric distribution feeds a sample window, which
-  feeds an estimator, which feeds a hypothesis test or a bootstrap
-  CI, with every intermediate quantity visible as a control voltage
-  the learner can probe in real time. Empiria is also a
-  reproducible analog computer: random draws are
-  Mersenne-Twister-seeded; closed-form quantities use exact
-  numerical recipes (Lentz continued fractions for the *t*-CDF;
-  bias-corrected and accelerated bootstrap); patches are portable
-  JSON whose behavior is byte-identical across operating systems.
-  Three worked classroom examples — a visceral Schelling
-  demonstration, a seeded Welch *t*-test reproducible to six
-  decimal places, and an empirical verification of a closed-form
-  combinatorial probability — illustrate the platform's pedagogical
-  range from general-audience demonstration to graduate
-  methodological exercise.
+  Stochast is an open-source (GPL-3.0) suite of plugins for VCV Rack 2
+  that turn real statistical, social, and dynamical processes into
+  control voltage. Each module is a genuine computational process —
+  parametric sampling, online estimation, the bootstrap, agent-based
+  cascades and opinion dynamics, network epidemics, reaction-diffusion,
+  drift-diffusion decisions — exposed as knobs and CV so it can be
+  patched as a modulation source, a gate sequencer, or a slow evolving
+  signal anywhere on a rack. The result is generative and quirky, but
+  the mathematics is exact rather than faked for effect: random draws
+  are Mersenne-Twister-seeded, closed-form quantities use the standard
+  numerical recipes (Lentz continued fractions for the *t*-CDF, the
+  bias-corrected and accelerated bootstrap, Sanger's rule, STL), and
+  patches are portable JSON whose behavior is byte-identical across
+  operating systems. These notes describe the modules, their numerics,
+  and the analog-computer lineage they draw on. Stochast is the
+  music-side sibling of the browser-based *Empiria* web app, which
+  serves the teaching of statistics directly.
 ---
 
 # Introduction
 
-The case for reorganizing introductory statistics around
-simulation-based reasoning rather than closed-form normal-theory
-derivation is, by now, well established. Cobb's analysis of the
-introductory curriculum (Cobb, 2007), the simulation-based-inference
-movement organized around Tintle and colleagues (Tintle et al.,
-2015), and the GAISE College Report (American Statistical
-Association, 2016) all argue that students develop more durable
-inferential intuitions when they construct a sampling distribution
-empirically before they meet it as a formula. Empirical evaluations
-support this conclusion (Chance et al., 2004; delMas et al., 2007).
-The pedagogical principle is now mainstream; what remains uneven is
-the *toolkit* through which it is delivered.
+Random and emergent processes make wonderful sound sources: a sampling
+distribution wanders, a segregation grid crystallises, an epidemic
+rises and falls, a reaction-diffusion field breathes. Stochast takes
+that observation literally. It is a suite of VCV Rack 2 modules (VCV
+Rack, 2024) in which each module is a *genuine* statistical, agent-based,
+or dynamical process, exposed as knobs and control voltage so it can be
+patched anywhere on a rack — a modulation source, a gate sequencer, an
+evolving CV line. The appeal is that these processes are intrinsically
+generative: they are alive in exactly the way a good modulation source
+should be, because they obey real dynamics rather than a hand-tuned
+imitation of them.
 
-The current landscape of simulation-based teaching tools is
-fragmented: *Sampling SIM* and *Tinkerplots* address
-sampling-distribution intuition (Konold & Lehrer, 2008);
-*Tinkerplots* and *CODAP* address school-level exploratory analysis
-(Finzer, 2013); *NetLogo* and the *seeing-theory.brown.edu* /
-*RossmanChance.com* libraries address agent-based modelling and
-specific inferential techniques respectively (Wilensky, 1999); R
-Shiny supports instructor-built applets at considerable authoring
-cost. Each tool is highly effective in its specific domain, but
-each is also *siloed*: a self-contained applet whose output cannot
-be piped into the next analytical step. This matters because the
-inferential workflow students need to internalize — *data-generating
-process → sampling → estimation → inference → diagnostics* — is
-exactly the kind of composable pipeline that one-applet-per-concept
-tools render invisible.
+What distinguishes Stochast from a bag of approximate "random" modules
+is that the mathematics underneath is the genuine article. Random draws
+are Mersenne-Twister-seeded; closed-form quantities are computed by the
+standard numerical recipes rather than normal-theory shortcuts; and a
+patch is portable JSON that reproduces byte-identically across machines.
+A Stochast patch is therefore both a playable instrument and a correct
+computation — quirky on the surface, rigorous underneath.
 
-We describe **Empiria**, an open-source teaching suite for VCV Rack
+These notes document the modules, their numerics, and the
+analog-computer lineage the design draws on. They are technical notes,
+not a course: Stochast is not pitched as a way to *teach* statistics.
+That role belongs to its sibling, the browser-based **Empiria** web app
+(<https://kevinschoenholzer.com/empiria/>), which is built for the
+classroom. Stochast is the music-side counterpart — the same real math,
+repurposed as instruments.
+
+We describe **Stochast**, an open-source teaching suite for VCV Rack
 2 (VCV Rack, 2024) — the free modular-synthesizer environment —
 designed to address this gap. The **Methods** plugin (the subject
 of this paper) places fifteen statistical primitives into VCV
@@ -101,7 +91,7 @@ bias-correction diagnostics — so the dynamic being taught is
 visible as it unfolds.
 
 This paper makes the pedagogical and methodological case for
-Empiria's design and demonstrates the platform through three worked
+Stochast's design and demonstrates the platform through three worked
 classroom examples that span the full range of intended audiences
 — from a 45-minute general-audience demonstration that requires no
 prior statistical background, to a precisely seeded reproducible
@@ -110,11 +100,11 @@ reference, complete parameter listings, numerical-recipe details,
 and patch-grammar documentation are provided in the Methods plugin
 manual (`docs/methods_manual.md`) and the project repository; this
 paper concentrates on the conceptual moves and on the worked
-examples through which Empiria can be evaluated as a teaching tool.
+examples through which Stochast can be evaluated as a teaching tool.
 
 # Voltage as the medium of simulation
 
-Empiria's design rests on a particular intuition about voltage. In
+Stochast's design rests on a particular intuition about voltage. In
 a modular synthesizer, every signal — whether it represents a
 pitch, an amplitude, a gate, or, in our case, a population
 fraction or an estimator's value — is a *control voltage* (CV), a
@@ -150,7 +140,7 @@ variables, with electrical components implementing the operators
 that combined them. These machines were used to model missile
 trajectories, weather systems, predator–prey dynamics, and the
 spread of epidemics (Small, 2001) — substantive applications that
-overlap substantially with Empiria's pedagogical scope. The
+overlap substantially with Stochast's pedagogical scope. The
 argument here is not historical nostalgia: it is that voltage
 proved to be a remarkably general representation of state, and
 operating on voltage proved to be a remarkably general way to
@@ -165,9 +155,9 @@ level of general theory of instruction; Sfard (1991) framed the
 same trajectory as the operational-to-structural duality of a
 mathematical idea; Mayer's (2009) cognitive theory of multimedia
 learning provides the corresponding empirical foundation for
-animation-plus-narration over text-only presentation. Empiria's
+animation-plus-narration over text-only presentation. Stochast's
 patch grammar makes this sequence operational: a two-sample
-*t*-test is, in Empiria, a literal sequence of objects the student
+*t*-test is, in Stochast, a literal sequence of objects the student
 wires together — two `Sample` modules, a `Frame` on each branch, a
 `Test` consuming both — and only once that patch has been built and
 modulated does the student meet the corresponding formula on
@@ -292,7 +282,7 @@ voltages as real-world quantities and vice versa. Complete
 per-parameter, per-input, per-output reference for all fifteen
 modules is in the plugin manual.
 
-The broader Empiria suite — four additional plugins covering
+The broader Stochast suite — four additional plugins covering
 agent-based social-science simulators (**Polis**), network
 epidemiology (**Epi**), spatial-emergence models (**Space**), and
 behavioural-economics models (**Decisions**) — shares the Methods
@@ -310,7 +300,7 @@ suitable for an audience that has never met a probability
 distribution; Workflow B is a *precise*, seeded, exportable
 analysis at a level a graduate methods student would scrutinise;
 Workflow C is a *verification* exercise demonstrating that
-Empiria's empirical estimate of a closed-form probability agrees
+Stochast's empirical estimate of a closed-form probability agrees
 with the analytic value. All three patches are short (3–5 modules)
 and ship under `patches/` as `.vcv` files; all three reproduce
 byte-identically on any machine.
@@ -355,7 +345,7 @@ input.](figures/patches/seeded_t_test.png){#fig:patch-ttest width=80%}
 
 The same modules can be used at a level that satisfies a graduate
 methods student. We run a small-sample one-sample *t*-test against
-H₀ = 0, with the explicit goal of comparing Empiria's *exact*
+H₀ = 0, with the explicit goal of comparing Stochast's *exact*
 Student-*t* *p*-value against the normal-approximation *p*-value
 that many introductory teaching tools still emit.
 
@@ -377,7 +367,7 @@ are shaded according to the chosen α. The pedagogical claim is
 graduate-level: with df = 7, the exact tail probability is
 materially larger than what a normal-approximation tool would
 report, and the discrepancy can flip a conclusion at α = 0.05. The
-student can compare Empiria's *p* against R's
+student can compare Stochast's *p* against R's
 `pt(t, df = 7, lower.tail = FALSE) * 2` for any (*t*, df) and
 confirm agreement to machine precision.
 
@@ -387,9 +377,9 @@ place a `Tape` module, set MODE = REC, LENGTH = 8, patch
 **Export buffer to CSV…**. The resulting CSV is a single column of
 the eight raw draws, immediately loadable in R as
 `d <- read.csv("sample.csv")$ch1`; the standard `t.test(d, mu = 0)`
-matches Empiria's *t* and *p* to six decimal places. The same CSV,
+matches Stochast's *t* and *p* to six decimal places. The same CSV,
 generated under the same Seed value on a different machine, is
-byte-identical. This is the workflow that makes Empiria-based
+byte-identical. This is the workflow that makes Stochast-based
 assignments *gradable*: the instructor distributes a `.vcv` patch
 plus seed value, students run it, export the CSV, and submit both
 their derived statistic and the underlying data — all of which the
@@ -407,13 +397,13 @@ GROWING mode and `Boot`. `Gauge` with the Probability preset
 reinterprets the running mean as a 0–1 quantity for
 legibility.](figures/patches/coin_flip_lln.png){#fig:patch-coin width=85%}
 
-Workflows A and B exhibit Empiria's pedagogical surface; Workflow
+Workflows A and B exhibit Stochast's pedagogical surface; Workflow
 C is the *rigor proof*. The simulation-based-inference literature
 recommends that learners construct empirical sampling distributions
 and check them against closed-form values where both are available
 (Cobb, 2007; Tintle et al., 2015); doing so is also the standard way
 to validate that a computational instrument behaves as advertised.
-If Empiria's empirical estimate reproduces a textbook combinatorial
+If Stochast's empirical estimate reproduces a textbook combinatorial
 probability to within Monte Carlo error, deterministically, on any
 operating system, then its claim to methodological seriousness is
 concrete rather than rhetorical.
@@ -450,7 +440,7 @@ The Monte Carlo standard error at 10 000 trials with the true
 *p* = 0.0625 is √(*p*(1−*p*)/*n*) ≈ 0.0024. The observed phat is
 within 0.5 SE of the true value; an exact binomial test does not
 reject the null that the true probability is 1/16. A collaborator
-running the same Empiria patch with Seed = 100 on a different
+running the same Stochast patch with Seed = 100 on a different
 machine produces a byte-identical CSV, and therefore the exact same
 phat to six decimal places.
 
@@ -463,7 +453,7 @@ be a perfectly adequate substrate for the verification.
 
 # Reproducibility, classroom integration, and evaluation
 
-Empiria treats classroom-scale reproducibility as a first-order
+Stochast treats classroom-scale reproducibility as a first-order
 design property rather than as a downstream concern. Every random
 module wraps `std::mt19937` (Mersenne Twister, period 2¹⁹⁹³⁷ − 1)
 seeded from a per-module 32-bit seed preserved in the patch JSON
@@ -472,7 +462,7 @@ human-readable JSON; CSV exports from `Tape` are plain ASCII with
 six decimal digits per sample. Three students on three different
 operating systems running the same patch with the same Seed value
 produce three byte-identical CSV files. Every analytical output
-that Empiria produces has an external reference against which it
+that Stochast produces has an external reference against which it
 can be checked: R's `t.test()`, `lm()`, `boot::boot.ci()`,
 `pchisq()`; Python's `scipy.stats`. Agreement is verified at the
 design stage and is re-checkable by any user willing to perform
@@ -486,9 +476,9 @@ single patch (e.g. `Sample → Frame`, sweeping the *N* knob to make
 the standard error shrink visibly as 1/√*n*), and students engage
 by turning knobs and predicting what the trace will do. In an
 **undergraduate introductory statistics or research-methods
-course**, Empiria is positioned as a companion tool that visualises
+course**, Stochast is positioned as a companion tool that visualises
 what R or Python is computing, not as a replacement. Students
-install VCV Rack (free) and the Empiria `.vcvplugin` files (total
+install VCV Rack (free) and the Stochast `.vcvplugin` files (total
 < 1 MB) on personal laptops with no administrator privileges
 required. In a **graduate research-methods seminar**, the same
 modules become a fast-prototyping sandbox for interrogating edge
@@ -502,7 +492,7 @@ A natural next step is empirical evaluation against a control
 condition. We sketch a within-instructor, between-section
 randomised comparison over two academic terms: parallel sections
 of the same course, taught by the same instructor, randomly
-assigned to an Empiria-augmented condition (Empiria plus the usual
+assigned to an Stochast-augmented condition (Stochast plus the usual
 R workflow) or a control (R workflow only, with comparable static
 figures and Shiny applets to control for time on visualizations).
 Outcomes would be measured by the *Comprehensive Assessment of
@@ -521,7 +511,7 @@ workflow is intended to control.
 
 # Conclusion
 
-Empiria places fifteen statistical primitives into the
+Stochast places fifteen statistical primitives into the
 patch-cable grammar of a modular synthesizer so that the
 inferential workflow — from data-generating process through
 estimation, hypothesis testing, and bootstrap confidence intervals
@@ -540,7 +530,7 @@ The platform's most significant limitations are the absence of a
 controlled classroom evaluation (the next step planned by the
 author), the activation cost for users new to the modular interface,
 and the polyphonic-cable cap of sixteen channels which limits agent
-counts in the broader Empiria suite's social-science simulators.
+counts in the broader Stochast suite's social-science simulators.
 None of these limitations is intrinsic to the design; each is a
 planned-but-deferred next step.
 
@@ -549,12 +539,12 @@ planned-but-deferred next step.
 The author thanks the VCV Rack developer community for the modular
 plugin SDK and example modules, and acknowledges the long
 open-source tradition of computational social science on which
-Empiria draws.
+Stochast draws.
 
 # Disclosure statement
 
 The author reports there are no competing interests to declare.
-Empiria is released under the GPL-3.0 license through the author's
+Stochast is released under the GPL-3.0 license through the author's
 personal open-source imprint. The imprint is not a commercial
 entity and yields no income to the author. No external funding
 supported this work.
@@ -566,7 +556,7 @@ of a specific dataset; the materials that support its results are
 the source code, panel assets, reference patches, and documentation
 that together constitute the platform. All such materials are
 available under the GPL-3.0 license at
-<https://github.com/kevisc/empiria>. The repository tag `v2.0.0`
+<https://github.com/kevisc/stochast>. The repository tag `v2.0.0`
 corresponds to the version described in this paper and is
 permanently archived at <https://doi.org/10.5281/zenodo.20283281>.
 The repository contains the C++17 source for all fifteen Methods

@@ -1,9 +1,9 @@
-# Empiria — User Manual
+# Stochast — User Manual
 
-A complete reference for **Empiria**, an open-source suite of VCV
+A complete reference for **Stochast**, an open-source suite of VCV
 Rack 2 modules for teaching statistics, data science, computational
 social science, behavioural economics, and spatial-emergence
-modelling. Empiria is written and maintained by **Kevin Schoenholzer**
+modelling. Stochast is written and maintained by **Kevin Schoenholzer**
 (<https://kevinschoenholzer.com>), a postdoctoral researcher in the
 social sciences at Università della Svizzera italiana (USI), and
 distributed under the GPL-3.0 licence through his personal
@@ -27,7 +27,7 @@ and connected with virtual patch cables; signals flowing through the
 cables are *control voltages* (CVs) at audio sample rate. It runs on
 macOS, Windows, and Linux, and is distributed as both a free download
 (VCV Rack Free) and a paid Pro edition (VCV Rack Pro — not required
-for Empiria).
+for Stochast).
 
 Although VCV Rack was built for electronic music, its signal-flow
 paradigm is also a remarkably general substrate for *quantitative*
@@ -35,7 +35,7 @@ modelling: every CV is just a floating-point number streaming through
 a wire, and a "module" is just a transformation of those numbers. This
 is the same intuition behind the analog computers of the mid-twentieth
 century — voltages-as-state-variables, wires-as-operators — and it is
-what Empiria exploits to make sampling distributions, regression,
+what Stochast exploits to make sampling distributions, regression,
 hypothesis testing, and agent-based models all manipulable through a
 single, uniform interface.
 
@@ -47,12 +47,12 @@ single, uniform interface.
    Windows / Linux). Pro is *not* required.
 2. Run the installer and launch VCV Rack. On first launch you'll see
    an empty rack containing only the master audio I/O.
-3. Empiria does *not* require any audio interface. The modules
+3. Stochast does *not* require any audio interface. The modules
    compute and visualise at sample rate; audio output is optional.
 
-### Installing Empiria
+### Installing Stochast
 
-Empiria ships as five `.vcvplugin` files (one per plugin):
+Stochast ships as five `.vcvplugin` files (one per plugin):
 `SHLabs-Polis-*.vcvplugin`, `SHLabs-Methods-*.vcvplugin`,
 `SHLabs-Epi-*.vcvplugin`, `SHLabs-Space-*.vcvplugin`,
 `SHLabs-Decisions-*.vcvplugin`. To install:
@@ -74,7 +74,7 @@ Empiria ships as five `.vcvplugin` files (one per plugin):
   module onto the rack to place it.
 - **Patching**: click on an output port (the brass-coloured jacks at
   the bottom of most modules) and drag to an input port. Cables in
-  Empiria carry both single-channel and multi-channel ("polyphonic",
+  Stochast carry both single-channel and multi-channel ("polyphonic",
   up to 16 channels) signals.
 - **Knob control**: click-and-drag vertically to adjust. Hold `Cmd`/`Ctrl`
   for fine adjustment. Right-click a knob to type an exact value or
@@ -85,12 +85,12 @@ Empiria ships as five `.vcvplugin` files (one per plugin):
 - **Right-click any port** for polyphony channel-count overrides and
   the "show signal" oscilloscope quick-view.
 - **Saving a patch**: `File → Save As` writes a `.vcv` file (a small
-  JSON document). Empiria patches are typically a few KB; they are
+  JSON document). Stochast patches are typically a few KB; they are
   fully self-describing and reproducible across machines.
 
-### Convention shared across all Empiria modules
+### Convention shared across all Stochast modules
 
-- **Panel grammar**: every Empiria module is 20 HP wide (300 px),
+- **Panel grammar**: every Stochast module is 20 HP wide (300 px),
   with a title strip at the top, a live visualisation area below it,
   one or two rows of knobs / switches in the middle, an input jack
   row, and an output jack row at the bottom.
@@ -123,18 +123,18 @@ Empiria ships as five `.vcvplugin` files (one per plugin):
 | **VCV Rack manual** | <https://vcvrack.com/manual/> |
 | **VCV community forum** | <https://community.vcvrack.com/> |
 | **VCV Library (module index)** | <https://library.vcvrack.com/> |
-| **Empiria source code** | (project repository URL) |
-| **Empiria companion paper** | `paper.pdf` in the project root |
+| **Stochast source code** | (project repository URL) |
+| **Stochast companion paper** | `paper.pdf` in the project root |
 | **VCV Rack developer SDK** | <https://vcvrack.com/manual/PluginDevelopmentTutorial> |
-| **Empiria design spec (panel grammar)** | [`design_spec.md`](design_spec.md) |
-| **Empiria example patches** | [`use_cases.md`](use_cases.md) |
+| **Stochast design spec (panel grammar)** | [`design_spec.md`](design_spec.md) |
+| **Stochast example patches** | [`use_cases.md`](use_cases.md) |
 
 ---
 
 ## Documenting and exporting results
 
 For students writing up assignments, lab reports, or methods
-chapters — or for instructors preparing course materials — Empiria
+chapters — or for instructors preparing course materials — Stochast
 supports several routes for capturing what happens on the rack:
 
 ### Screenshots
@@ -163,7 +163,7 @@ patches to students and to attach to assignments.
 
 ### CSV export of synthetic data (Tape)
 
-Empiria's **Tape** module records any polyphonic CV stream into an
+Stochast's **Tape** module records any polyphonic CV stream into an
 in-memory buffer. Right-click on Tape and choose
 **"Export buffer to CSV…"** to write the recorded samples to a CSV
 file at a location of your choosing. The file format is:
@@ -189,7 +189,7 @@ sample,ch1,ch2,...,chN
    carry the analysis further with the platform's analytical
    layer or any other ecosystem.
 
-Because Empiria is fully deterministic given a Seed value, the
+Because Stochast is fully deterministic given a Seed value, the
 exported CSV is reproducible: another student running the same
 patch with the same Seed will export a byte-identical CSV.
 
@@ -197,19 +197,19 @@ patch with the same Seed will export a byte-identical CSV.
 
 VCV Rack itself ships with a *Recorder* module (Brand: VCV,
 Category: Recorder) that captures the audio bus to a WAV file. If
-you have wired an Empiria module's CV into an audio module
+you have wired an Stochast module's CV into an audio module
 (e.g. a VCO whose pitch is being driven by Cohort's quantised
 output), the Recorder captures that audio for later playback or
 inclusion in a video.
 
 ### Composability with R, Python, Julia
 
-Empiria is positioned as a *companion* to standard statistical
+Stochast is positioned as a *companion* to standard statistical
 tooling, not a replacement. The CSV export from Tape lets students
-take a synthetic dataset they generated *inside* Empiria and
+take a synthetic dataset they generated *inside* Stochast and
 analyse it *outside* in any environment of their choosing — useful
 both for assignments that require a specific software package and
-for graduate work that mixes Empiria's visualisation with an
+for graduate work that mixes Stochast's visualisation with an
 established analytic stack.
 
 ---
@@ -785,7 +785,7 @@ The three **Percent** variants handle the three common voltage
 conventions a learner might run into:
 
 - **Unipolar** assumes a 0..10 V source — typical of gates,
-  envelopes, and Empiria observables (e.g. Frame's MEAN of a
+  envelopes, and Stochast observables (e.g. Frame's MEAN of a
   normalised quantity).
 - **Bipolar** assumes a centred −5..+5 V source (audio, LFOs,
   most modulators) and maps it onto 0..100 %, so a sine LFO reads
@@ -805,16 +805,16 @@ Typical placement: anywhere between a Sample / Polis simulator and
 a downstream observer, where the instructor or learner wants the
 displayed value to be interpretable directly.
 
-#### Pairing Gauge with the rest of Empiria
+#### Pairing Gauge with the rest of Stochast
 
-Gauge is built around the voltage conventions the other Empiria
+Gauge is built around the voltage conventions the other Stochast
 modules already follow. To use it productively you do not need to
 "calibrate" anything — but you do need to know which preset matches
 which upstream output. The table below documents every
-Empiria-to-Gauge pairing that comes up in normal teaching use.
+Stochast-to-Gauge pairing that comes up in normal teaching use.
 
 **Fraction / probability / proportion outputs (0..10 V → 0..1).**
-The dominant Empiria convention: any output that semantically
+The dominant Stochast convention: any output that semantically
 represents a fraction in [0, 1] is emitted as a CV in [0, 10] V.
 Gauge's **Probability** preset (x = V / 10) renders it as a
 decimal; the **Percent — unipolar** preset (x = 10·V) renders it
@@ -863,7 +863,7 @@ operation — same data, different units — is exactly the move that
 introductory statistics asks students to internalise.
 
 **Test statistics, reaction times, and other "as-is" outputs.**
-Some Empiria outputs are already in semantically meaningful units
+Some Stochast outputs are already in semantically meaningful units
 on the voltage axis itself — they are not normalised. For these,
 the Gauge preset is either Voltage (passthrough, just to make the
 value displayable in large numerals) or a dedicated unit preset.
@@ -978,7 +978,7 @@ The receiving module also forwards the adjacency to its own right neighbour,
 so additional graph-aware modules can be chained on the same graph. The
 same agent indices are preserved end-to-end, so per-agent observers (Frame,
 Tape, Boot) see a consistent set of nodes regardless of which mid-chain
-module they sample from. The protocol is open — any future Empiria module
+module they sample from. The protocol is open — any future Stochast module
 can opt in by allocating a matching message buffer on its left expander.
 
 Pedagogically this turns "mixing structure" into a single rack-placement

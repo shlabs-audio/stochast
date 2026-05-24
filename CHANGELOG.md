@@ -1,4 +1,4 @@
-# Empiria changelog
+# Stochast changelog
 
 ## 2.0.3 — 2026-05-19
 
@@ -150,12 +150,12 @@ submission. No module behavior changes.
 - Fixed `sourceUrl`, `manualUrl`, and `changelogUrl` in all five
   plugin.json files (previously pointed to a non-existent
   `kevinschoenholzer/empiria` path; now point to the canonical
-  `kevisc/empiria` repository).
+  `kevisc/stochast` repository).
 - Updated `pluginUrl` to <https://shlabs.kevinschoenholzer.com>.
 
 ## 2.0.0 — 2026-05-16
 
-First public release of the Empiria suite for VCV Rack 2. Bundles
+First public release of the Stochast suite for VCV Rack 2. Bundles
 five plugins under the SHLabs brand:
 
 - **Polis** (6 modules): Cascade, Diffusion, Dilemma, Discourse,

@@ -1,24 +1,29 @@
-# Empiria
+# Stochast
 
-**A modular-synthesizer platform for teaching statistics, data science,
-and computational social science**, built as a suite of plugins for
-[VCV Rack 2](https://vcvrack.com/Rack).
+**A suite of VCV Rack 2 plugins that turn real statistical, social, and
+stochastic processes into control voltage** — quirky, generative patch
+material with genuinely correct math under the hood.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![VCV Rack 2](https://img.shields.io/badge/VCV%20Rack-2.x-brightgreen.svg)](https://vcvrack.com)
 [![ORCID](https://img.shields.io/badge/ORCID-0000--0001--9892--5869-A6CE39.svg)](https://orcid.org/0000-0001-9892-5869)
 
-Empiria treats the modular synthesizer's grammar — knobs, patch cables,
-control-voltage signals, clocked sampling, polyphony, live
-visualizations — as a teaching surface for inferential reasoning. The
-patch *is* the curriculum: the wires drawn between modules externalize
-the data-generating process, the estimator, and the inferential
-apparatus in a way that no static diagram or single-purpose applet can
-match. The same patch is also a deterministic, citeable artifact: every
-random draw is Mersenne-Twister-seeded, every closed-form quantity is
-computed by the standard numerical recipe (Lentz CF, BCa, Sanger,
-STL), and every patch is portable JSON that runs byte-identically on
-macOS, Windows, and Linux.
+Each Stochast module is a genuine statistical, agent-based, or dynamical
+process — a bootstrap resampler, a Granovetter cascade, an SIR epidemic, a
+reaction-diffusion field — exposed as knobs and control voltage. Patch a
+sampling distribution as a modulation source, clock a segregation grid into
+a gate sequencer, let an epidemic curve sweep a filter. The output is
+generative and alive precisely because the process underneath behaves the
+way the theory says it should — and the math is not faked for effect: every
+random draw is Mersenne-Twister-seeded and every closed-form quantity uses
+the standard numerical recipe (Lentz CF, BCa, Sanger, STL), so a patch is
+reproducible and the numbers are correct on macOS, Windows, and Linux. It
+just happens to be fun.
+
+> **Looking to teach or learn statistics?** That's the job of the
+> browser-based **[Empiria web app](https://kevinschoenholzer.com/empiria/)** —
+> a separate, classroom-focused tool. Stochast is the music-side sibling:
+> the same real math, repurposed as modular-synth instruments.
 
 ---
 
@@ -33,9 +38,8 @@ macOS, Windows, and Linux.
 | **Decisions**| Behavioural economics & cognition            | Prospect, Bandit, DDM                                                              |
 
 The full suite is 28 modules across five plugins, released together
-under GPL-3.0. The **Methods** plugin is the subject of the companion
-paper (`paper.md`); a separate companion paper for the agent-based
-plugins is forthcoming.
+under GPL-3.0. Technical notes on the methods and the numerics live in
+[`paper.md`](paper.md).
 
 ---
 
@@ -44,7 +48,7 @@ plugins is forthcoming.
 1. Install [VCV Rack 2](https://vcvrack.com/Rack) (Free edition is
    sufficient). Launch it once so it creates its plugin folder.
 2. Download a release `.vcvplugin` archive from the
-   [Releases page](https://github.com/kevinschoenholzer/empiria/releases),
+   [Releases page](https://github.com/kevisc/stochast/releases),
    drop it into the plugin folder, and restart Rack.
 3. Open one of the starter patches in [`patches/`](patches/), press
    play, and explore.
@@ -55,20 +59,15 @@ For a guided tour, see the [Methods plugin manual](docs/methods_manual.md).
 
 ## Documentation
 
-- **Companion paper.** [paper.md](paper.md) — *Empiria: A
-  Modular-Synthesizer Platform for Simulation-Based Statistics
-  Education*. Submission-ready LaTeX build in
-  [`submission/jsdse_latex/`](submission/jsdse_latex/).
-- **User manual.** [docs/methods_manual.md](docs/methods_manual.md) —
-  per-module reference for every Methods module: parameters, inputs,
-  outputs, lights, visualizations, right-click options, implementation
-  notes. PDF: [docs/methods_manual.pdf](docs/methods_manual.pdf).
-- **Compiled paper.** [submission/jsdse_latex/empiria.pdf](submission/jsdse_latex/empiria.pdf)
-  — the JSDSE-ready PDF build of [paper.md](paper.md), produced from
-  the LaTeX sources in [`submission/jsdse_latex/`](submission/jsdse_latex/)
-  ([empiria.tex](submission/jsdse_latex/empiria.tex),
-  [_body.tex](submission/jsdse_latex/_body.tex), and
-  [paper.bib](paper.bib)).
+- **Module manual.** [docs/methods_manual.md](docs/methods_manual.md) —
+  per-module reference: parameters, inputs, outputs, lights,
+  visualizations, right-click options, implementation notes. PDF:
+  [docs/methods_manual.pdf](docs/methods_manual.pdf).
+- **Technical notes.** [paper.md](paper.md) — the design and the
+  mathematics behind the modules: the named numerical recipes, the
+  seeding/reproducibility model, and the analog-computer lineage.
+- **Use cases & patches.** [docs/use_cases.md](docs/use_cases.md) and the
+  starter patches under [`patches/`](patches/).
 
 ---
 
@@ -108,29 +107,22 @@ in the C++17 standard library.
 
 ---
 
-## Citing Empiria
+## Citing Stochast
 
-```
-Schoenholzer, K. (2026). Empiria: A modular-synthesizer platform for
-  simulation-based statistics education. *Journal of Statistics and
-  Data Science Education* [under review].
-```
-
-BibTeX:
+Stochast is free for music, research, or teaching. If you'd like to
+credit it, cite the software:
 
 ```bibtex
-@article{empiria2026,
-  author  = {Schoenholzer, Kevin},
-  title   = {Empiria: A Modular-Synthesizer Platform for
-             Simulation-Based Statistics Education},
-  journal = {Journal of Statistics and Data Science Education},
-  year    = {2026},
-  note    = {under review}
+@software{stochast,
+  author = {Schoenholzer, Kevin},
+  title  = {Stochast: Statistical and Social-Science Modules for VCV Rack},
+  year   = {2026},
+  url    = {https://github.com/kevisc/stochast}
 }
 ```
 
-The repository tag corresponding to the version described in the
-paper is `v2.0.0`.
+For teaching statistics specifically, see the
+[Empiria web app](https://kevinschoenholzer.com/empiria/).
 
 ---
 
@@ -152,7 +144,7 @@ Università della Svizzera italiana (USI), Lugano, Switzerland
 ORCID: [0000-0001-9892-5869](https://orcid.org/0000-0001-9892-5869)
 Web: <https://kevinschoenholzer.com>
 
-Empiria is released through the author's personal open-source imprint
+Stochast is released through the author's personal open-source imprint
 **SHLabs**.
 
 ---
@@ -161,4 +153,4 @@ Empiria is released through the author's personal open-source imprint
 
 The author thanks the VCV Rack developer community for the modular
 plugin SDK and example modules, and acknowledges the long open-source
-tradition of computational social science on which Empiria draws.
+tradition of computational social science on which Stochast draws.

@@ -1,4 +1,4 @@
-# Empiria — example patches
+# Stochast — example patches
 
 Each section below describes a complete teaching patch: the modules
 required, the cables to draw, the parameter settings to try, the
@@ -449,7 +449,7 @@ on identical data — the cornerstone of computational reproducibility.
 
 ---
 
-## Tips for teaching with Empiria
+## Tips for teaching with Stochast
 
 * **Slow the clocks.** All modules have internal clocks at 30 Hz so
   they run unattended, but a shared external clock at 2–4 Hz lets
@@ -458,6 +458,6 @@ on identical data — the cornerstone of computational reproducibility.
   (Cascade's hysteretic mode, Sample's distribution selection,
   Boot's CI level, Tape's CSV export) that are essential to the
   pedagogy.
-* **Mute the audio.** Empiria modules are not audio sources — they
+* **Mute the audio.** Stochast modules are not audio sources — they
   produce CV. Patch outputs into an oscillator + VCA only when a
   musical interpretation is desired.

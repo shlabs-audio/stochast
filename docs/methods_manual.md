@@ -1,26 +1,27 @@
 ---
-title: "Empiria — Methods Plugin Manual"
-subtitle: "Companion to *Empiria: A Modular-Synthesizer Platform for Simulation-Based Statistics Education*"
+title: "Stochast — Methods Plugin Manual"
+subtitle: "Companion to *Stochast: Statistically Grounded Generative Modules for VCV Rack*"
 date: "May 2026"
 ---
 
 ## About this manual
 
-This manual is the practical companion to the *Empiria* Methods
-plugin: a fifteen-module statistical-analysis layer for VCV Rack 2.
-It documents every parameter, input, output, light, and right-click
+This manual is the practical companion to the *Stochast* Methods
+plugin: a fifteen-module statistical layer for VCV Rack 2. It
+documents every parameter, input, output, light, and right-click
 context-menu option for every Methods module, along with the
 installation steps, the conventions shared across the suite, and the
-three reference patches distributed with the source.
+reference patches distributed with the source.
 
-The accompanying paper develops the pedagogical argument behind the
-plugin (simulation-based inference, reproducible patch-cable
-workflows, the use of a modular synthesizer as a live statistical
-signal-flow surface). This manual stays close to the keys, knobs,
-and jacks — a reference and quick-start guide for instructors and
-students who already have the paper open.
+Each module is a real statistical process — a sampler, an estimator,
+a hypothesis test, the bootstrap — turned into knobs and control
+voltage you can patch as generative, modulation, or sequencing
+material. The accompanying technical notes cover the numerics and the
+analog-computer lineage; this manual stays close to the keys, knobs,
+and jacks. (For *teaching* statistics, reach for the browser-based
+Empiria web app at <https://kevinschoenholzer.com/empiria/> instead.)
 
-The wider Empiria suite includes four additional plugins (**Polis**,
+The wider Stochast suite includes four additional plugins (**Polis**,
 **Epi**, **Space**, **Decisions**) covering agent-based social
 models, network epidemiology, spatial dynamics, and behavioral
 decision-making. They share the Methods panel grammar and patch
@@ -36,7 +37,7 @@ text are kept brief.
 
 1. Download VCV Rack 2 from <https://vcvrack.com/Rack>. The Free
    edition is sufficient for everything in this manual; the Pro
-   edition is needed only if you want to run Empiria inside another
+   edition is needed only if you want to run Stochast inside another
    DAW as an audio-plug-in host.
 2. Install on macOS, Windows, or Linux.
 3. Launch Rack at least once so it creates the plugin folder at:
@@ -44,7 +45,7 @@ text are kept brief.
    - Windows: `%LOCALAPPDATA%\Rack2\plugins-win-x64\`
    - Linux: `~/.Rack2/plugins-lin-x64/`
 
-### Installing the Empiria Methods plugin
+### Installing the Stochast Methods plugin
 
 Either:
 
@@ -140,7 +141,7 @@ parallel pseudo-experiments without adding modules.
 
 ### Reproducibility primitive
 
-Every random draw inside Empiria is produced by a Mersenne-Twister
+Every random draw inside Stochast is produced by a Mersenne-Twister
 RNG (`std::mt19937`, period 2¹⁹⁹³⁷ − 1) seeded explicitly at
 construction. The **Seed** module exposes an integer seed (0–999) as
 a control voltage and as a change-trigger pulse. Connect the
@@ -646,7 +647,7 @@ the seed as a parameter (e.g. as a Beta's α via a CV input).
 Polyphonic record-and-replay buffer for CV streams. Three modes
 toggle between recording the input, playing the buffer once, and
 looping it indefinitely. Pairs with the right-click *CSV export*
-item for taking a buffered dataset out of Empiria into R / Python.
+item for taking a buffered dataset out of Stochast into R / Python.
 
 | Param  | Range      | Default | Effect |
 |--------|------------|---------|--------|
@@ -874,12 +875,12 @@ loadable in R and Python; an example column header is
 
 ### Composability with R / Python / Julia
 
-Empiria is a *companion* to the standard statistical toolchain,
+Stochast is a *companion* to the standard statistical toolchain,
 not a replacement. The CSV export from Tape lets a student take a
-synthetic dataset they generated *inside* Empiria and analyze it
+synthetic dataset they generated *inside* Stochast and analyze it
 *outside* in any environment of their choosing — useful both for
 assignments that require a specific software package and for
-graduate work that mixes Empiria's live visualization with an
+graduate work that mixes Stochast's live visualization with an
 established analytic stack. The recommended workflow is:
 
 1. Build a data-generating pipeline (`Sample → Code` for
@@ -891,7 +892,7 @@ established analytic stack. The recommended workflow is:
    analysis further with the platform's own analytical layer or
    any other ecosystem.
 
-Because every random draw in Empiria is deterministic given a
+Because every random draw in Stochast is deterministic given a
 fixed `Seed` value, the exported CSV is reproducible: another
 student running the same patch with the same seed will export a
 byte-identical CSV.
@@ -928,7 +929,7 @@ choose *Type value…* to enter a numerical value directly.
 
 ## Further reading
 
-The accompanying paper, *Empiria: A Modular-Synthesizer Platform
+The accompanying paper, *Stochast: A Modular-Synthesizer Platform
 for Simulation-Based Statistics Education*, develops the
 pedagogical argument and places the platform in the context of the
 GAISE / Cobb / Tintle simulation-based-inference literature, the
