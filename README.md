@@ -61,8 +61,7 @@ For a guided tour, see the [Methods plugin manual](docs/methods_manual.md).
 
 - **Module manual.** [docs/methods_manual.md](docs/methods_manual.md) —
   per-module reference: parameters, inputs, outputs, lights,
-  visualizations, right-click options, implementation notes. PDF:
-  [docs/methods_manual.pdf](docs/methods_manual.pdf).
+  visualizations, right-click options, implementation notes.
 - **Technical notes.** [paper.md](paper.md) — the design and the
   mathematics behind the modules: the named numerical recipes, the
   seeding/reproducibility model, and the analog-computer lineage.
