@@ -3,8 +3,8 @@
 A complete reference for **Stochast**, an open-source suite of VCV
 Rack 2 modules for teaching statistics, data science, computational
 social science, behavioural economics, and spatial-emergence
-modelling. Stochast is written and maintained by **SHLabs**
-(<https://shlabs.ch>), a postdoctoral researcher in the
+modelling. Stochast is written and maintained by **Kevin Schoenholzer**
+(<https://kevinschoenholzer.com>), a postdoctoral researcher in the
 social sciences at Università della Svizzera italiana (USI), and
 distributed under the GPL-3.0 licence through his personal
 open-source imprint *SHLabs*.

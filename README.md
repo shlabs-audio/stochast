@@ -48,7 +48,7 @@ under GPL-3.0. Technical notes on the methods and the numerics live in
 1. Install [VCV Rack 2](https://vcvrack.com/Rack) (Free edition is
    sufficient). Launch it once so it creates its plugin folder.
 2. Download a release `.vcvplugin` archive from the
-   [Releases page](https://github.com/shlabs-audio/stochast/releases),
+   [Releases page](https://github.com/kevisc/stochast/releases),
    drop it into the plugin folder, and restart Rack.
 3. Open one of the starter patches in [`patches/`](patches/), press
    play, and explore.
@@ -113,10 +113,10 @@ credit it, cite the software:
 
 ```bibtex
 @software{stochast,
-  author = {SHLabs},
+  author = {Schoenholzer, Kevin},
   title  = {Stochast: Statistical and Social-Science Modules for VCV Rack},
   year   = {2026},
-  url    = {https://github.com/shlabs-audio/stochast}
+  url    = {https://github.com/kevisc/stochast}
 }
 ```
 
@@ -137,11 +137,11 @@ follow VCV Rack's licensing.
 
 ## Author
 
-**SHLabs**
+**Kevin Schoenholzer**
 Postdoctoral Researcher
 Università della Svizzera italiana (USI), Lugano, Switzerland
 ORCID: [0000-0001-9892-5869](https://orcid.org/0000-0001-9892-5869)
-Web: <https://shlabs.ch>
+Web: <https://kevinschoenholzer.com>
 
 Stochast is released through the author's personal open-source imprint
 **SHLabs**.

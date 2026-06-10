@@ -149,9 +149,9 @@ submission. No module behavior changes.
 
 - Fixed `sourceUrl`, `manualUrl`, and `changelogUrl` in all five
   plugin.json files (previously pointed to a non-existent
-  `empiria` path; now point to the canonical
-  `shlabs-audio/stochast` repository).
-- Updated `pluginUrl` to <https://shlabs.ch>.
+  `kevinschoenholzer/empiria` path; now point to the canonical
+  `kevisc/stochast` repository).
+- Updated `pluginUrl` to <https://shlabs.kevinschoenholzer.com>.
 
 ## 2.0.0 — 2026-05-16
 
