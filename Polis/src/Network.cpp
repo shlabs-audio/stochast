@@ -106,9 +106,9 @@ struct Network : Module {
         configInput(RESET_INPUT, "Reset seed + send walker back to node 0");
         configInput(BETA_CV_INPUT, "β CV (0..10 V adds to knob)");
         configOutput(GATES_OUTPUT, "Walker gate per agent (polyphonic, fires on visit)");
-        configOutput(MEAN_DEGREE_OUTPUT, "Mean degree ⟨k⟩ (raw, V = degree)");
+        configOutput(MEAN_DEGREE_OUTPUT, "Mean degree ⟨k⟩ (raw, V = degree; saturates at 12 V for very dense graphs)");
         configOutput(CLUSTERING_OUTPUT, "Global clustering coefficient (0..10 V)");
-        configOutput(JUMP_OUTPUT, "Jump distance — circular index-step of last hop, scaled 0..10 V");
+        configOutput(JUMP_OUTPUT, "Jump distance — circular index-step of last hop (linear 0..10 V, or V/Oct when quantized to a scale via the context menu)");
         regenerate();
     }
 
@@ -162,19 +162,11 @@ struct Network : Module {
     json_t* dataToJson() override {
         json_t* root = json_object();
         json_object_set_new(root, "scaleMode", json_integer(scaleMode));
-        json_object_set_new(root, "seed",      json_integer((json_int_t)seed));
         return root;
     }
     void dataFromJson(json_t* root) override {
         if (json_t* m = json_object_get(root, "scaleMode")) {
             scaleMode = clamp((int)json_integer_value(m), 0, NUM_SCALES - 1);
-        }
-        if (json_t* s = json_object_get(root, "seed")) {
-            seed = (uint32_t)json_integer_value(s);
-            // Force a regenerate on the next process() tick by invalidating
-            // the prevSeed sentinel — that way the downstream Diffusion /
-            // Outbreak sees the same graph the user saved.
-            prevSeed = ~seed;
         }
     }
 
@@ -196,9 +188,9 @@ struct Network : Module {
         if (lastJumpDist <= 0) return 0.f;
         int size = sizes[scaleMode];
         int d = lastJumpDist - 1;
-        int degree = d % size;
+        int scaleDegree = d % size;
         int octave = d / size;
-        int semitone = scales[scaleMode][degree] + octave * 12;
+        int semitone = scales[scaleMode][scaleDegree] + octave * 12;
         return (float)semitone / 12.f;
     }
 
@@ -406,7 +398,10 @@ struct Network : Module {
         }
         lights[SHUFFLE_LIGHT].setBrightness(params[SHUFFLE_PARAM].getValue() > 0.5f ? 1.f : 0.f);
 
-        // Detect parameter changes and re-build the network
+        // Detect parameter changes and re-build the network. β (including its
+        // CV) is a *structural* knob: any change rebuilds the whole O(N^2)
+        // graph, so β is intended for occasional re-shaping, not continuous
+        // audio-rate modulation via BETA_CV.
         int k = currentK(), tp = currentType();
         float beta = currentBeta();
         if (N != prevPop || k != prevK || tp != prevType ||
@@ -440,17 +435,23 @@ struct Network : Module {
         outputs[JUMP_OUTPUT].setVoltage(quantizedJump());
 
         // Publish adjacency + walker state into the right neighbour's left
-        // expander buffer. The consumer (currently Diffusion or Epi/Outbreak)
-        // is responsible for allocating its own leftExpander buffers — a
-        // push-receive convention used by most VCV Rack expanders. We only
-        // write if the neighbour is a whitelisted Empiria graph-participant
-        // module; otherwise we would corrupt a foreign module's buffer.
-        if (isEmpiriaGraphParticipant(rightExpander.module) &&
+        // expander buffer. The consumer (currently Diffusion) is responsible
+        // for allocating its own leftExpander buffers — a push-receive
+        // convention used by most VCV Rack expanders. We write the message,
+        // ask the engine to flip the consumer's buffers, and the consumer
+        // reads from its own leftExpander.consumerMessage next tick.
+        //
+        // Gate on the neighbour's model before writing: the buffer is only a
+        // full-size EmpiriaNetworkMessage when the neighbour is a known Empiria
+        // consumer that allocated it as such. The magic header is validated by
+        // the reader, but the overflow would happen here on write, so it cannot
+        // guard this side — the model check must.
+        if (rightExpander.module &&
+            rightExpander.module->model == modelDiffusion &&
             rightExpander.module->leftExpander.producerMessage) {
             auto* msg = static_cast<EmpiriaNetworkMessage*>(
                             rightExpander.module->leftExpander.producerMessage);
-            msg->magic   = EmpiriaNetworkMessage::kMagic;
-            msg->version = EmpiriaNetworkMessage::kVersion;
+            msg->magic = EmpiriaNetworkMessage::kMagic;
             msg->N = N;
             for (int i = 0; i < EmpiriaNetworkMessage::kMaxN; ++i) {
                 for (int j = 0; j < EmpiriaNetworkMessage::kMaxN; ++j)
@@ -688,7 +689,7 @@ struct NetworkWidget : ModuleWidget {
             {"Generates a random graph (Erdős-Rényi, Watts-Strogatz,",
              "Barabási-Albert, regular lattice) and exposes adjacency on",
              "its RIGHT expander port for Diffusion to read."},
-            "Diffusion (the consumer), Seed (reproducible graphs)");
+            "Diffusion (the consumer, place it on the right)");
     }
 };
 

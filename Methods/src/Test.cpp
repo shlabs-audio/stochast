@@ -130,6 +130,23 @@ struct Test : Module {
         return 0.05f;
     }
 
+    // Two-sided Student-t critical value for the current df and alpha, found by
+    // inverting the exact tTailTwoSided p-value. Drives the shaded rejection
+    // region so the shading, the REJECT gate and the displayed p-value all
+    // agree. Falls back to the standard-normal quantile before any data exists
+    // (df <= 0), where the viz already draws the Gaussian null.
+    float tCriticalValue() {
+        int df = dfCached;
+        if (df <= 0) return criticalValue();
+        float alpha = alphaValue();
+        float lo = 0.f, hi = 100.f;
+        for (int it = 0; it < 60; ++it) {
+            float mid = 0.5f * (lo + hi);
+            if (tTailTwoSided(mid, df) > alpha) lo = mid; else hi = mid;
+        }
+        return 0.5f * (lo + hi);
+    }
+
     int effectiveN(int total) {
         int mode = currentMode();
         if (mode == MODE_RUN)  return std::min(currentN(),  total);
@@ -281,21 +298,7 @@ struct Test : Module {
             float pooledVar = ((n1 - 1) * var1 + (n2 - 1) * var2) / (n1 + n2 - 2);
             float pooledSD = (pooledVar > 1e-12f) ? std::sqrt(pooledVar) : 0.f;
             effectSize = (pooledSD > 1e-9f) ? (m1 - m2) / pooledSD : 0.f;
-            // Welch–Satterthwaite degrees of freedom: matches the SE numerator
-            // and yields the correct p-value at unequal variances. Falls back
-            // to the pooled-equal-variance df if either group is too small or
-            // the denominator underflows.
-            float u1 = var1 / std::max(1, n1);
-            float u2 = var2 / std::max(1, n2);
-            float num = (u1 + u2) * (u1 + u2);
-            float den = (n1 > 1 ? (u1 * u1) / (n1 - 1) : 0.f)
-                      + (n2 > 1 ? (u2 * u2) / (n2 - 1) : 0.f);
-            if (den > 1e-12f) {
-                int dfWS = (int)std::round(num / den);
-                dfCached = std::max(1, std::min(dfWS, n1 + n2 - 2));
-            } else {
-                dfCached = n1 + n2 - 2;
-            }
+            dfCached = n1 + n2 - 2; // approximate
         }
         pValue = tTailTwoSided(tStat, dfCached);
     }
@@ -317,7 +320,9 @@ struct Test : Module {
         }
         if (tick) takeClockTick();
 
-        bool reject = std::fabs(tStat) > criticalValue() && dfCached > 0;
+        // Decide on the exact Student-t p-value the module computes, so the
+        // gate agrees with the displayed p and the shaded rejection region.
+        bool reject = (pValue < alphaValue()) && dfCached > 0;
 
         outputs[T_OUTPUT].setVoltage(clamp(tStat, -12.f, 12.f));
         outputs[P_OUTPUT].setVoltage(clamp(pValue, 0.f, 1.f) * 10.f);
@@ -397,8 +402,10 @@ struct TestView : LightWidget {
         if (maxPdf < 1e-9f) maxPdf = 1.f;
         auto mapPDF = [&](float p) { return y0 + H * (1.f - 0.9f * p / maxPdf); };
 
-        // Critical value & shaded rejection regions (drawn first, behind curve)
-        float tCrit = module->criticalValue();
+        // Critical value & shaded rejection regions (drawn first, behind curve).
+        // Use the Student-t critical value for the current df so the shading
+        // lines up with the exact-t p-value and the REJECT gate.
+        float tCrit = module->tCriticalValue();
         // Right tail: t >= tCrit
         nvgBeginPath(vg);
         nvgMoveTo(vg, mapT(tCrit), y0 + H);
@@ -462,7 +469,7 @@ struct TestView : LightWidget {
         if (haveStat) {
             float tDraw = clamp(module->tStat, tMin, tMax);
             float xObs = mapT(tDraw);
-            bool reject = std::fabs(module->tStat) > tCrit;
+            bool reject = module->pValue < module->alphaValue();
 
             // Vertical line through the chart
             nvgBeginPath(vg);
@@ -548,7 +555,7 @@ struct TestView : LightWidget {
             else if (module->pValue < 0.01f) star = " **";
             else if (module->pValue < 0.05f) star = " *";
             // Big t-statistic readout on top right
-            bool reject = std::fabs(module->tStat) > module->criticalValue();
+            bool reject = module->pValue < module->alphaValue();
             nvgFontSize(vg, 18.f);
             nvgFillColor(vg, reject ? nvgRGB(245, 90, 90)
                                     : nvgRGBA(220, 230, 245, 240));
@@ -577,7 +584,7 @@ struct TestView : LightWidget {
                     "(collecting…)", nullptr);
             return;
         }
-        bool reject = std::fabs(module->tStat) > module->criticalValue();
+        bool reject = module->pValue < module->alphaValue();
         char buf[96];
         if (reject) {
             std::snprintf(buf, sizeof(buf), "REJECT H₀   d=%.2f   df=%d",

@@ -60,7 +60,7 @@ struct Prospect : Module {
                     "γ — probability weighting (1 = linear; <1 = overweight rare events)");
         configParam(BETA_PARAM, 0.1f, 1.5f, 0.88f,
                     "β — loss curvature (often set equal to α)");
-        configInput(X_INPUT, "Objective outcome x (±10 V = ±10 units)");
+        configInput(X_INPUT, "Objective outcome x (±10 V = ±10 units; value plot shows ±5 window)");
         configInput(P_INPUT, "Objective probability p (0..10 V = 0..1)");
         configOutput(U_OUTPUT, "Subjective value Û(x), V");
         configOutput(W_OUTPUT, "Subjective weight ŵ(p), V");
@@ -135,9 +135,8 @@ struct ProspectView : LightWidget {
 
         // --- Value function on top half ---
         float x0 = pad, y0 = pad;
-        // axes (x: -10..10 to match configInput's "±10 V = ±10 units"
-        // promise; y: -10..10 for value units)
-        auto mapX = [&](float xv) { return x0 + W * (xv + 10.f) / 20.f; };
+        // axes (x: -5..5; y: -10..10 for value units)
+        auto mapX = [&](float xv) { return x0 + W * (xv + 5.f) / 10.f; };
         auto mapY = [&](float v)  { return y0 + halfH * (1.f - (v + 10.f) / 20.f); };
 
         // Reference axes
@@ -152,8 +151,8 @@ struct ProspectView : LightWidget {
         nvgStrokeColor(vg, nvgRGBA(120, 130, 150, 100));
         nvgStrokeWidth(vg, 0.4f);
         nvgBeginPath(vg);
-        nvgMoveTo(vg, mapX(-10.f), mapY(-10.f));
-        nvgLineTo(vg, mapX( 10.f), mapY( 10.f));
+        nvgMoveTo(vg, mapX(-5.f), mapY(-5.f));
+        nvgLineTo(vg, mapX( 5.f), mapY( 5.f));
         nvgStroke(vg);
 
         // Curve
@@ -161,7 +160,7 @@ struct ProspectView : LightWidget {
         bool first = true;
         const int N = 100;
         for (int i = 0; i <= N; ++i) {
-            float xv = -10.f + 20.f * i / N;
+            float xv = -5.f + 10.f * i / N;
             float v  = module->utility(xv);
             float px = mapX(xv), py = mapY(clamp(v, -10.f, 10.f));
             if (first) { nvgMoveTo(vg, px, py); first = false; }
@@ -172,7 +171,7 @@ struct ProspectView : LightWidget {
         nvgStroke(vg);
 
         // Operating point
-        float xObs = clamp(module->inputs[Prospect::X_INPUT].getVoltage(), -10.f, 10.f);
+        float xObs = clamp(module->inputs[Prospect::X_INPUT].getVoltage(), -5.f, 5.f);
         float uObs = module->utility(xObs);
         nvgBeginPath(vg);
         nvgCircle(vg, mapX(xObs), mapY(clamp(uObs, -10.f, 10.f)), 2.4f);
@@ -257,10 +256,12 @@ struct ProspectWidget : ModuleWidget {
         labels->out(2, "SU"); labels->out(3, "EV");
         addChild(labels);
 
-        addChild(createWidget<ScrewSilver>(Vec(15, 0)));
-        addChild(createWidget<ScrewSilver>(Vec(270, 0)));
-        addChild(createWidget<ScrewSilver>(Vec(15, 365)));
-        addChild(createWidget<ScrewSilver>(Vec(270, 365)));
+        // Corners flush at {0, 285} (family 300px convention) so the bottom-right
+        // screw clears the x=270 output-jack column.
+        addChild(createWidget<ScrewSilver>(Vec(0, 0)));
+        addChild(createWidget<ScrewSilver>(Vec(285, 0)));
+        addChild(createWidget<ScrewSilver>(Vec(0, 365)));
+        addChild(createWidget<ScrewSilver>(Vec(285, 365)));
 
         auto* view = new ProspectView;
         view->module = module;
@@ -294,14 +295,10 @@ struct ProspectWidget : ModuleWidget {
 
     void appendContextMenu(Menu* menu) override {
         appendAboutMenu(menu, "Prospect",
-            {"Why do the same people buy insurance AND lottery tickets?",
-             "Kahneman & Tversky's prospect theory: losses hurt ~2× as",
-             "much as equivalent gains feel good, and rare events get",
-             "psychologically overweighted. Both curves are live."},
-            "Gauge (preset 'Probability'/'Percent'), Frame.",
-            {"Default λ = 2.25. Drive X from 0 to −3 V and watch the",
-             "value function plunge twice as fast as it rises on +3.",
-             "Set objective probability to 0.001 — w(p) ~10× it."});
+            {"Prospect-theory subjective value function with reference",
+             "dependence, loss aversion, and probability weighting.",
+             "Outputs subjective value v(x) and decision weight π(p)."},
+            "Gauge (preset 'Probability' or 'Percent'), Frame");
     }
 };
 

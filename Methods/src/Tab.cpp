@@ -153,20 +153,20 @@ struct Tab : Module {
 
     int categoryOf(float v, float lo, float hi, int k) {
         if (hi - lo < 1e-6f) return 1;
-        // Inputs from Code modules are 1V-per-category. Allow direct round.
-        // But also tolerate continuous CV in [lo, hi] via the same bucketing.
-        // Decide based on whether lo..hi looks like a "category range" (small)
-        // or a "continuous range" (e.g. -5..5).
         int byRound = clamp((int)std::round(v), 1, k);
-        // Continuous-mode bucket as a fallback for inputs that aren't already
-        // categorical (in case the user patches a raw CV stream)
+        // Code modules emit 1V-per-category: exact integer volts in 1..k.
+        // Detect that from the value itself, independent of the LOW/HIGH knobs
+        // (whose K-tuned default HIGH would otherwise mis-classify categorical
+        // input at K != 7 and silently mis-bin the table).
+        int   r = (int)std::round(v);
+        bool valueIsCategorical = (std::fabs(v - (float)r) < 0.05f && r >= 1 && r <= k);
+        // Continuous-mode bucket as a fallback for raw CV streams spanning
+        // [lo, hi] that aren't already categorical.
         float t = (v - lo) / (hi - lo);
-        int byBucket = 1 + (int)std::floor(t * k);
-        byBucket = clamp(byBucket, 1, k);
-        // If lo/hi roughly span 0..K+1, treat as already-categorical.
-        // Otherwise treat as continuous and bucket.
-        bool seemsCategorical = (lo > -0.5f && lo < 1.5f && hi > k - 0.5f && hi < k + 1.5f);
-        return seemsCategorical ? byRound : byBucket;
+        int byBucket = clamp(1 + (int)std::floor(t * k), 1, k);
+        // Also honour an explicit 0..K+1 categorical LOW/HIGH window.
+        bool windowIsCategorical = (lo > -0.5f && lo < 1.5f && hi > k - 0.5f && hi < k + 1.5f);
+        return (valueIsCategorical || windowIsCategorical) ? byRound : byBucket;
     }
 
     void recomputeStats() {

@@ -28,37 +28,14 @@ extern Model* modelNetwork;
 // (Polis, Epi). Keep this declaration in sync across plugin.hpp files.
 // ---------------------------------------------------------------------------
 struct EmpiriaNetworkMessage {
-    static constexpr uint32_t kMagic   = 0xE1A1D1A1u;
-    static constexpr uint16_t kVersion = 1;
-    static constexpr int      kMaxN    = 16;
+    static constexpr uint32_t kMagic = 0xE1A1D1A1u;
+    static constexpr int      kMaxN  = 16;
 
-    uint32_t magic   = 0;          // = kMagic when the producer has populated this
-    uint16_t version = 0;          // = kVersion; bump if layout changes
-    uint16_t _pad    = 0;
-    int      N       = 0;          // active node count, 1..kMaxN
-    bool     adj[kMaxN][kMaxN]{};  // symmetric adjacency, no self-loops
-    float    nodeState[kMaxN]{};   // optional per-node state (e.g. S/I/R as 0/5/10 V)
+    uint32_t magic = 0;          // = kMagic when the producer has populated this
+    int      N     = 0;          // active node count, 1..kMaxN
+    bool     adj[kMaxN][kMaxN]{};// symmetric adjacency, no self-loops
+    float    nodeState[kMaxN]{}; // optional per-node state (e.g. S/I/R as 0/5/10 V)
 };
-
-// Whitelist check: is this right-neighbour an Empiria module that participates
-// in the adjacency-on-expander protocol? Senders MUST check this before
-// writing into the neighbour's leftExpander.producerMessage — otherwise an
-// unrelated third-party module that happens to allocate a left-expander buffer
-// for its own protocol would have ~300 bytes overwritten.
-// Keep the whitelist in sync across Polis/ and Epi/ plugin.hpp files.
-inline bool isEmpiriaGraphParticipant(Module* m) {
-    if (!m || !m->model || !m->model->plugin) return false;
-    const std::string& pluginSlug = m->model->plugin->slug;
-    const std::string& modelSlug  = m->model->slug;
-    if (pluginSlug == "SHLabs-Polis") {
-        return modelSlug == "Diffusion"
-            || modelSlug == "Network";   // chain forwarding
-    }
-    if (pluginSlug == "SHLabs-Epi") {
-        return modelSlug == "Outbreak";
-    }
-    return false;
-}
 
 // Renders the module title across the header strip via NanoVG. Used in place
 // of SVG <text> in the panel, which VCV Rack's NanoSVG parser does not render.
@@ -82,6 +59,13 @@ struct ModuleTitle : Widget {
         // Faux-bold: draw twice with a small x-offset
         nvgText(vg, box.size.x / 2.f,         18.f, text.c_str(), nullptr);
         nvgText(vg, box.size.x / 2.f + 0.4f,  18.f, text.c_str(), nullptr);
+
+        // Universal SHLabs maker's mark — bottom-centre, identical on every module.
+        nvgFontSize(vg, 7.f);
+        nvgFillColor(vg, nvgRGB(0x6e, 0x72, 0x7c));
+        nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
+        nvgTextLetterSpacing(vg, 3.f);
+        nvgText(vg, box.size.x / 2.f, 375.f, "SHLABS", nullptr);
     }
 };
 
@@ -149,31 +133,21 @@ struct PanelLabels : Widget {
 };
 
 // Right-click "What does this do?" helper. See Methods/plugin.hpp.
-// The optional `tryThisLines` argument is rendered between the headline
-// and the companions list, prefixed with a "Try this:" label — used to
-// give the user a concrete pedagogical scenario for the module.
 inline void appendAboutMenu(Menu* menu,
                             const std::string& name,
                             const std::vector<std::string>& headlineLines,
-                            const std::string& companions,
-                            const std::vector<std::string>& tryThisLines = {}) {
+                            const std::string& companions) {
     menu->addChild(new MenuSeparator);
     menu->addChild(createSubmenuItem("What does this do?", "",
-        [name, headlineLines, companions, tryThisLines](Menu* sub) {
+        [name, headlineLines, companions](Menu* sub) {
             sub->addChild(createMenuLabel(name));
             sub->addChild(new MenuSeparator);
             for (const auto& line : headlineLines)
                 sub->addChild(createMenuLabel(line));
-            if (!tryThisLines.empty()) {
-                sub->addChild(new MenuSeparator);
-                sub->addChild(createMenuLabel("Try this:"));
-                for (const auto& line : tryThisLines)
-                    sub->addChild(createMenuLabel(line));
-            }
             sub->addChild(new MenuSeparator);
             sub->addChild(createMenuLabel("Companions:"));
             sub->addChild(createMenuLabel(companions));
             sub->addChild(new MenuSeparator);
-            sub->addChild(createMenuLabel("Full reference: docs/modules.md"));
+            sub->addChild(createMenuLabel("Full reference: shlabs.ch/stochast"));
         }));
 }

@@ -19,19 +19,12 @@ struct Strata : Module {
     enum OutputId { TREND_OUTPUT, SEASONAL_OUTPUT, RESIDUAL_OUTPUT, NUM_OUTPUTS };
 
     static constexpr float kMaxPeriodSec = 4.0f;
-    static constexpr float kMaxSampleRate = 192000.f;
     static constexpr int   SCOPE_BUF = 256;
-    static constexpr int   kMaxTableSize =
-        (int)(kMaxPeriodSec * kMaxSampleRate) + 16;
 
     // DSP state
     float trendY = 0.f;
-    // Two heap buffers, both reserved at construction to the max size that
-    // any period setting × any sample-rate can demand. process() then uses
-    // .resize() (no realloc since capacity == max) + .swap() so the audio
-    // thread never allocates.
-    std::vector<float> seasonalTable;
-    std::vector<float> seasonalScratch;
+    std::vector<float> seasonalTable;   // pre-allocated at max size; active [0,currentTableSize)
+    std::vector<float> resampleScratch; // pre-allocated scratch for period changes (RT-safe)
     int phase = 0;
     int currentTableSize = 0;
 
@@ -48,28 +41,40 @@ struct Strata : Module {
         configParam(TREND_PARAM,  0.f, 1.f, 0.35f, "Trend cutoff");
         configParam(PERIOD_PARAM, 0.f, 1.f, 0.40f, "Seasonal period");
         configParam(MEMORY_PARAM, 0.f, 1.f, 0.50f, "Seasonal memory");
-        configInput(PERIOD_CV_INPUT, "Period CV (±5 V → ×0.25..×4)");
+        configInput(PERIOD_CV_INPUT, "Period CV (±10 V → ×0.25..×4)");
         configInput(SIGNAL_INPUT, "Signal");
         configOutput(TREND_OUTPUT, "Trend");
         configOutput(SEASONAL_OUTPUT, "Seasonal");
         configOutput(RESIDUAL_OUTPUT, "Residual");
-        seasonalTable.reserve(kMaxTableSize);
-        seasonalScratch.reserve(kMaxTableSize);
-        seasonalTable.assign(1, 0.f);
+        allocTables();
         currentTableSize = 1;
+    }
+
+    // Size the seasonal table (and its resample scratch) to the largest period
+    // possible at the current sample rate, once, so process() never reallocates.
+    void allocTables() {
+        float sr = APP->engine->getSampleRate();
+        int maxSize = std::max(2, (int)std::ceil(kMaxPeriodSec * sr) + 1);
+        seasonalTable.assign(maxSize, 0.f);
+        resampleScratch.assign(maxSize, 0.f);
     }
 
     void onReset() override {
         trendY = 0.f;
         std::fill(seasonalTable.begin(), seasonalTable.end(), 0.f);
         phase = 0;
+        if (currentTableSize < 1) currentTableSize = 1;
         for (int i = 0; i < SCOPE_BUF; ++i) {
             inBuf[i] = trendBuf[i] = seasBuf[i] = residBuf[i] = 0.f;
         }
         scopeWriteIdx = 0;
     }
 
-    void onSampleRateChange() override { onReset(); }
+    void onSampleRateChange() override {
+        allocTables();
+        currentTableSize = 1;
+        onReset();
+    }
 
     static float logMap(float t, float lo, float hi) {
         return lo * std::pow(hi / lo, t);
@@ -87,18 +92,17 @@ struct Strata : Module {
         }
         pSec = clamp(pSec, 0.005f, kMaxPeriodSec);
 
-        int newSize = std::max(1, (int)std::round(pSec * args.sampleRate));
-        newSize = std::min(newSize, kMaxTableSize);  // safety
+        int maxSize = (int)seasonalTable.size();
+        int newSize = clamp((int)std::round(pSec * args.sampleRate), 1, maxSize);
         if (newSize != currentTableSize) {
-            // Resize the scratch buffer (no realloc — kMaxTableSize was
-            // reserved in the constructor), resample from the active table
-            // into scratch, then swap. Both buffers retain max capacity.
-            seasonalScratch.resize(newSize);
+            // Resample the active region into the pre-allocated scratch buffer
+            // and copy back — no heap allocation/free on the audio thread.
             for (int i = 0; i < newSize; ++i) {
                 int src = (int)((float)i / newSize * currentTableSize);
-                seasonalScratch[i] = seasonalTable[src];
+                if (src >= currentTableSize) src = currentTableSize - 1;
+                resampleScratch[i] = seasonalTable[src];
             }
-            seasonalTable.swap(seasonalScratch);
+            for (int i = 0; i < newSize; ++i) seasonalTable[i] = resampleScratch[i];
             phase = phase % newSize;
             currentTableSize = newSize;
         }

@@ -17,41 +17,11 @@
   <!-- family-stripe --><rect x="0" y="36" width="300" height="3" fill="#f57878" opacity="0.75"/>
   <rect x="10" y="44" width="280" height="190" fill="#080a10" stroke="#2b2f42" stroke-width="0.5"/>
 
-  <g fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
-     font-size="8" text-anchor="middle" letter-spacing="1.5">
-    <text x="45"  y="246">POP</text>
-    <text x="120" y="246">β</text>
-    <text x="195" y="246">γ</text>
-    <text x="270" y="246">TYPE</text>
-  </g>
+  <!-- All panel lettering (POP, beta, gamma, TYPE, K, beta-NET, SEED, IN, OUT,
+       jack labels) is drawn at runtime by PanelLabels/ModuleTitle via NanoVG.
+       NanoSVG cannot render SVG lettering elements, so none belong here. -->
 
-  <g fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
-     font-size="7.5" text-anchor="middle" letter-spacing="1.5">
-    <text x="120" y="282">K</text>
-    <text x="195" y="282">β·NET</text>
-    <text x="270" y="282">SEED</text>
-  </g>
-
-  <text x="10" y="313" fill="#6a7088" font-family="Helvetica, Arial, sans-serif"
-        font-size="7" font-weight="bold" letter-spacing="2">IN</text>
-  <g fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
-     font-size="7.5" text-anchor="middle" letter-spacing="1.2">
-    <text x="45"  y="313">CLOCK</text>
-    <text x="120" y="313">RESET</text>
-    <text x="195" y="313">β·CV</text>
-  </g>
-
-  <text x="10" y="344" fill="#6a7088" font-family="Helvetica, Arial, sans-serif"
-        font-size="7" font-weight="bold" letter-spacing="2">OUT</text>
-  <g fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
-     font-size="7.5" text-anchor="middle" letter-spacing="1.2">
-    <text x="45"  y="344">STATE</text>
-    <text x="120" y="344">I</text>
-    <text x="195" y="344">R</text>
-    <text x="270" y="344">PEAK</text>
-  </g>
-
-  <line x1="8" y1="238" x2="292" y2="238" stroke="#2b2f42" stroke-width="0.4"/>
-  <line x1="8" y1="305" x2="292" y2="305" stroke="#2b2f42" stroke-width="0.4"/>
-  <line x1="8" y1="350" x2="292" y2="350" stroke="#2b2f42" stroke-width="0.4"/>
+  <line x1="8" y1="235" x2="292" y2="235" stroke="#2b2f42" stroke-width="0.4"/>
+  <line x1="8" y1="296" x2="292" y2="296" stroke="#2b2f42" stroke-width="0.4"/>
+  <line x1="8" y1="339" x2="292" y2="339" stroke="#2b2f42" stroke-width="0.4"/>
 </svg>

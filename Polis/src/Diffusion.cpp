@@ -126,19 +126,20 @@ struct Diffusion : Module {
         auto* msg = static_cast<EmpiriaNetworkMessage*>(leftExpander.consumerMessage);
         if (!msg) return nullptr;
         if (msg->magic != EmpiriaNetworkMessage::kMagic) return nullptr;
-        if (msg->version != EmpiriaNetworkMessage::kVersion) return nullptr;
         return msg;
     }
 
     // Forward the received adjacency to the right neighbour, so a chain like
     // Network | Diffusion | further-graph-aware-module all see the same graph.
-    // Only forwards to a whitelisted Empiria graph-participant module —
-    // writing into a foreign third-party expander buffer would corrupt it.
     void forwardAdjacencyRight() {
         const auto* in = tryGetNetworkMessage();
         if (!in) return;
-        if (!isEmpiriaGraphParticipant(rightExpander.module)) return;
-        if (!rightExpander.module->leftExpander.producerMessage) return;
+        // Gate on the neighbour's model before writing: only a known Empiria
+        // consumer (Diffusion) allocates a full-size EmpiriaNetworkMessage
+        // buffer. Writing into an arbitrary neighbour's buffer would overflow.
+        if (!rightExpander.module ||
+            rightExpander.module->model != modelDiffusion ||
+            !rightExpander.module->leftExpander.producerMessage) return;
         auto* out = static_cast<EmpiriaNetworkMessage*>(
                         rightExpander.module->leftExpander.producerMessage);
         *out = *in;
@@ -248,27 +249,6 @@ struct Diffusion : Module {
         lights[SATURATE_LIGHT].setBrightness(gate ? 1.f : 0.f);
 
         forwardAdjacencyRight();
-    }
-
-    json_t* dataToJson() override {
-        json_t* root = json_object();
-        json_object_set_new(root, "countAdopted", json_integer(countAdopted));
-        json_t* arr = json_array();
-        for (int i = 0; i < kMaxN; ++i)
-            json_array_append_new(arr, json_boolean(adopted[i]));
-        json_object_set_new(root, "adopted", arr);
-        return root;
-    }
-    void dataFromJson(json_t* root) override {
-        if (auto* j = json_object_get(root, "countAdopted"))
-            countAdopted = (int)json_integer_value(j);
-        if (auto* arr = json_object_get(root, "adopted")) {
-            if (json_is_array(arr)) {
-                size_t n = std::min((size_t)kMaxN, json_array_size(arr));
-                for (size_t i = 0; i < n; ++i)
-                    adopted[i] = json_is_true(json_array_get(arr, i));
-            }
-        }
     }
 };
 
@@ -476,15 +456,10 @@ struct DiffusionWidget : ModuleWidget {
 
     void appendContextMenu(Menu* menu) override {
         appendAboutMenu(menu, "Diffusion",
-            {"Why does every viral product look like an S-curve?",
-             "Bass's diffusion model: spontaneous adoption (rate p)",
-             "ignites the curve; imitation (rate q) drives the middle;",
-             "saturation stalls it at the top."},
-            "Network (graph topology on left), Cascade (threshold), Tape.",
-            {"p = 0.01, q = 0.30, no Network — well-mixed S-curve in",
-             "~30 sec. Now patch a Network module to the left and",
-             "switch to BARABASI: hubs adopt early, the curve gets",
-             "steeper. Topology dominates timing on real social spread."});
+            {"Spreads a state through a network supplied on its left",
+             "expander. Adjacency comes from Network. Watch how seed",
+             "structure shapes the eventual reach and speed of diffusion."},
+            "Network (REQUIRED on the left), Cascade (threshold variant)");
     }
 };
 

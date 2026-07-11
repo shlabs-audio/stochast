@@ -1,23 +1,23 @@
 {
   "slug": "SHLabs-Methods",
   "name": "SHLabs Methods",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "license": "GPL-3.0-or-later",
   "brand": "SHLabs",
   "author": "SHLabs",
   "authorEmail": "hello@shlabs.ch",
   "authorUrl": "https://shlabs.ch",
-  "pluginUrl": "https://shlabs.ch",
-  "manualUrl": "https://github.com/shlabs-audio/stochast/blob/main/docs/modules.md",
+  "pluginUrl": "https://shlabs.ch/stochast/",
+  "manualUrl": "https://shlabs.ch/stochast/",
   "sourceUrl": "https://github.com/shlabs-audio/stochast",
-  "donateUrl": "",
+  "donateUrl": "https://shlabs.ch/donate/",
   "changelogUrl": "https://github.com/shlabs-audio/stochast/blob/main/CHANGELOG.md",
   "modules": [
     {
       "slug": "Strata",
       "name": "Strata",
       "description": "Real-time STL-style decomposition. Splits an incoming CV/audio signal into Trend (low-pass drift), Seasonal (period-locked recurring component) and Residual (everything else).",
-      "tags": ["Utility", "Filter"]
+      "tags": ["Utility", "Filter", "Polyphonic"]
     },
     {
       "slug": "Cohort",
@@ -29,7 +29,7 @@
       "slug": "Factor",
       "name": "Factor",
       "description": "Real-time principal-component analysis on six CV inputs (Sanger's rule). Outputs the top three latent components — a 'factor analysis' mixer for modulation.",
-      "tags": ["Mixer", "Utility"]
+      "tags": ["Mixer", "Utility", "Polyphonic"]
     },
     {
       "slug": "Sample",

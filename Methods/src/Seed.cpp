@@ -55,11 +55,6 @@ struct Seed : Module {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(VALUE_PARAM, 0.f, (float)kMaxSeed, 1.f, "Seed value");
         paramQuantities[VALUE_PARAM]->snapEnabled = true;
-        // Right-click Randomize must NOT scramble the seed value — that
-        // would defeat the reproducibility primitive that Seed exists to
-        // be. The dedicated RANDOMIZE button on the panel is the only
-        // intended way to advance to a new seed.
-        paramQuantities[VALUE_PARAM]->randomizeEnabled = false;
         configButton(RANDOMIZE_PARAM, "Randomize seed (0..999)");
         configInput(CLOCK_INPUT, "Clock — increment seed each rising edge");
         configInput(RESET_INPUT, "Reset seed to 0");

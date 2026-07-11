@@ -121,10 +121,6 @@ struct Pareto : Module {
 
             if (ud(rng) < pIwins) { value[i] += stake; value[j] -= stake; }
             else                  { value[i] -= stake; value[j] += stake; }
-            // Float accumulation can creep slightly below zero under bias;
-            // clamp so divisors (topShare, gini) stay well-behaved.
-            if (value[i] < 0.f) value[i] = 0.f;
-            if (value[j] < 0.f) value[j] = 0.f;
         }
 
         if (poolR > 0.f) {
@@ -135,10 +131,7 @@ struct Pareto : Module {
                 value[i] -= tk;
             }
             float perAgent = pool / std::max(1, N);
-            for (int i = 0; i < N; ++i) {
-                value[i] += perAgent;
-                if (value[i] < 0.f) value[i] = 0.f;
-            }
+            for (int i = 0; i < N; ++i) value[i] += perAgent;
         }
     }
 
@@ -205,26 +198,6 @@ struct Pareto : Module {
         bool concentrated = top >= kConcThreshold;
         outputs[CONCENTRATION_OUTPUT].setVoltage(concentrated ? 10.f : 0.f);
         lights[CONCENTRATION_LIGHT].setBrightness(concentrated ? 1.f : 0.f);
-    }
-
-    json_t* dataToJson() override {
-        json_t* root = json_object();
-        json_t* arr = json_array();
-        for (int i = 0; i < kMaxN; ++i)
-            json_array_append_new(arr, json_real(value[i]));
-        json_object_set_new(root, "value", arr);
-        return root;
-    }
-    void dataFromJson(json_t* root) override {
-        if (auto* arr = json_object_get(root, "value")) {
-            if (json_is_array(arr)) {
-                size_t n = std::min((size_t)kMaxN, json_array_size(arr));
-                for (size_t i = 0; i < n; ++i) {
-                    json_t* v = json_array_get(arr, i);
-                    if (json_is_number(v)) value[i] = (float)json_number_value(v);
-                }
-            }
-        }
     }
 };
 
@@ -437,15 +410,10 @@ struct ParetoWidget : ModuleWidget {
 
     void appendContextMenu(Menu* menu) override {
         appendAboutMenu(menu, "Pareto",
-            {"Where does wealth inequality come from? Even with fair",
-             "coin flips, pairwise random trading produces a winner-",
-             "take-all distribution. The yard-sale model: no bias, no",
-             "skill, no fraud — just trading."},
-            "Frame (track inequality), Tape (record CDF).",
-            {"Start equal, BIAS = 0, POOL = 0. Run 60 sec and watch the",
-             "Gini climb from 0 to ~0.9. Now add BIAS: concentration",
-             "accelerates. Add POOL: a stable inequality emerges instead",
-             "of full winner-take-all. The model is the argument."});
+            {"Boghosian-style affine wealth model. Simulates trading",
+             "between agents under a small bias and shows convergence",
+             "to a Pareto-tailed wealth distribution."},
+            "Discourse (opinion clustering), Dilemma (strategic games)");
     }
 };
 

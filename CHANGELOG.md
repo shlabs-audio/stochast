@@ -1,5 +1,40 @@
 # Stochast changelog
 
+## 2.0.4 — 2026-07-11
+
+Release-polish version. Verified bug fixes across the suite plus a
+full metadata rebrand to the impersonal **SHLabs** identity
+(hello@shlabs.ch, shlabs.ch). No module slugs or panel layouts
+changed; patches saved with any 2.0.x load cleanly into 2.0.4.
+
+**Bug fixes**
+
+- **Methods / Test**: the t-critical gate now fires correctly, so
+  the significance readout matches the chosen alpha instead of
+  tripping a step early or late.
+- **Methods / Tab**: cross-tab binning is correct for any bin count
+  K, not only the default K = 7; non-default K no longer misplaces
+  counts in the final bin.
+- **Methods / Strata**: stratified resampling now uses real-time-safe
+  preallocation, removing an audio-thread allocation that could
+  glitch under heavy patching.
+- **Methods / Cohort**: state now persists correctly across save/load
+  so a reopened patch restores the running cohort rather than
+  resetting it.
+- **Polis**: expander handling is safety-gated — a Polis module with
+  a missing or mismatched neighbour no longer risks a bad read.
+- **Space / Turing**: the reaction-diffusion statistics update on a
+  stable per-instance cadence, so multiple Turing modules no longer
+  fight over a shared update clock.
+- **Epi**: right-click menu and persistence polish for cleaner
+  save/load and menu behaviour.
+
+**Rebranding**
+
+- plugin.json brand, author, and URL metadata across all five
+  plugins now carry the impersonal SHLabs identity (hello@shlabs.ch,
+  shlabs.ch); README and docs updated to match.
+
 ## 2.0.3 — 2026-05-19
 
 Pedagogy-framing release. No mechanism changes; rewrites the

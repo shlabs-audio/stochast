@@ -17,32 +17,7 @@
   <!-- family-stripe --><rect x="0" y="36" width="300" height="3" fill="#78dc8c" opacity="0.75"/>
   <rect x="10" y="44" width="280" height="190" fill="#080a10" stroke="#2b2f42" stroke-width="0.5"/>
 
-  <g fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
-     font-size="8" text-anchor="middle" letter-spacing="1.5">
-    <text x="45"  y="246">DENSITY</text>
-    <text x="120" y="246">SPEED</text>
-    <text x="195" y="246">WRAP</text>
-    <text x="270" y="246">SHUF</text>
-  </g>
-
-  <text x="10" y="313" fill="#6a7088" font-family="Helvetica, Arial, sans-serif"
-        font-size="7" font-weight="bold" letter-spacing="2">IN</text>
-  <g fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
-     font-size="7.5" text-anchor="middle" letter-spacing="1.2">
-    <text x="45"  y="313">CLOCK</text>
-    <text x="120" y="313">RESET</text>
-    <text x="195" y="313">DENS·CV</text>
-  </g>
-
-  <text x="10" y="344" fill="#6a7088" font-family="Helvetica, Arial, sans-serif"
-        font-size="7" font-weight="bold" letter-spacing="2">OUT</text>
-  <g fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
-     font-size="7.5" text-anchor="middle" letter-spacing="1.2">
-    <text x="45"  y="344">ALIVE</text>
-    <text x="120" y="344">Δ</text>
-    <text x="195" y="344">OSC</text>
-    <text x="270" y="344">ROW</text>
-  </g>
+  <!-- Panel labels are drawn in C++ via PanelLabels (NanoSVG drops SVG <text>). -->
 
   <line x1="8" y1="238" x2="292" y2="238" stroke="#2b2f42" stroke-width="0.4"/>
   <line x1="8" y1="305" x2="292" y2="305" stroke="#2b2f42" stroke-width="0.4"/>

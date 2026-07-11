@@ -149,38 +149,37 @@ struct Schelling : Module {
         unhappyFrac = (occupied > 0) ? (float)unhappy / occupied : 0.f;
     }
 
-    // Pre-allocated scratch buffers for stepCA (max kGrid*kGrid cells = 576).
-    // Used in place of per-tick std::vector allocations.
-    std::array<std::pair<int,int>, kGrid * kGrid> unhappyBuf{};
-    std::array<std::pair<int,int>, kGrid * kGrid> emptyBuf{};
-
     void stepCA() {
         float theta = currentTolerance();
-        // Gather unhappy and empty positions into pre-allocated arrays.
-        int nU = 0, nE = 0;
+        // Gather unhappy and empty positions
+        std::vector<std::pair<int,int>> unhappy;
+        std::vector<std::pair<int,int>> empty;
+        unhappy.reserve(64);
+        empty.reserve(64);
         for (int y = 0; y < kGrid; ++y)
             for (int x = 0; x < kGrid; ++x) {
                 if (grid[y][x] < 0) {
-                    emptyBuf[nE++] = {x, y};
+                    empty.push_back({x, y});
                 } else {
                     auto [same, total] = sameAndTotal(x, y);
                     float f = (total > 0) ? (float)same / total : 1.f;
-                    if (f < theta) unhappyBuf[nU++] = {x, y};
+                    if (f < theta) unhappy.push_back({x, y});
                 }
             }
 
-        std::shuffle(unhappyBuf.begin(), unhappyBuf.begin() + nU, rng);
-        std::shuffle(emptyBuf.begin(),  emptyBuf.begin()  + nE, rng);
+        std::shuffle(unhappy.begin(), unhappy.end(), rng);
+        std::shuffle(empty.begin(), empty.end(), rng);
 
         int moves = 0;
-        for (int u = 0; u < nU && nE > 0; ++u) {
-            auto src = unhappyBuf[u];
-            auto dst = emptyBuf[--nE];
+        for (auto& src : unhappy) {
+            if (empty.empty()) break;
+            // Pop the next empty cell
+            auto dst = empty.back();
+            empty.pop_back();
             int8_t typ = grid[src.second][src.first];
             grid[src.second][src.first] = -1;
             grid[dst.second][dst.first] = typ;
-            // src is now empty; push it back onto the empty buffer.
-            emptyBuf[nE++] = src;
+            empty.push_back(src);     // src is now empty
             ++moves;
         }
         movedLastTick = moves;
@@ -239,39 +238,11 @@ struct Schelling : Module {
     json_t* dataToJson() override {
         json_t* root = json_object();
         json_object_set_new(root, "seedVal", json_integer((json_int_t)seedVal));
-        // Pack the 24×24 grid as one int per row: 2 bits per cell encoding
-        // -1 (empty), 0 (type A), or 1 (type B). 24 cells × 2 bits = 48 bits.
-        json_t* gridArr = json_array();
-        for (int y = 0; y < kGrid; ++y) {
-            uint64_t row = 0;
-            for (int x = 0; x < kGrid; ++x) {
-                uint64_t code = (grid[y][x] < 0) ? 0ull
-                              : (grid[y][x] == 0) ? 1ull : 2ull;
-                row |= (code << (x * 2));
-            }
-            json_array_append_new(gridArr, json_integer((json_int_t)row));
-        }
-        json_object_set_new(root, "grid", gridArr);
         return root;
     }
     void dataFromJson(json_t* root) override {
         if (auto* j = json_object_get(root, "seedVal"))
             seedVal = (uint32_t)json_integer_value(j);
-        if (auto* gridArr = json_object_get(root, "grid")) {
-            if (json_is_array(gridArr)) {
-                size_t n = std::min((size_t)kGrid, json_array_size(gridArr));
-                for (size_t y = 0; y < n; ++y) {
-                    json_t* rowJ = json_array_get(gridArr, y);
-                    if (!json_is_integer(rowJ)) continue;
-                    uint64_t row = (uint64_t)json_integer_value(rowJ);
-                    for (int x = 0; x < kGrid; ++x) {
-                        uint64_t code = (row >> (x * 2)) & 0x3ull;
-                        grid[y][x] = (code == 0) ? -1
-                                   : (code == 1) ? 0 : 1;
-                    }
-                }
-            }
-        }
     }
 };
 
@@ -399,21 +370,17 @@ struct SchellingWidget : ModuleWidget {
             Vec(195, 358), module, Schelling::LOCAL_OUTPUT));
         addOutput(createOutputCentered<PJ301MPort>(
             Vec(270, 358), module, Schelling::QUIET_OUTPUT));
+        // In the gap between the LOCAL and QUIET ports, clear of the 'QUIET' label
         addChild(createLightCentered<SmallLight<GreenLight>>(
-            Vec(270, 344), module, Schelling::QUIET_LIGHT));
+            Vec(222, 358), module, Schelling::QUIET_LIGHT));
     }
 
     void appendContextMenu(Menu* menu) override {
         appendAboutMenu(menu, "Schelling",
-            {"How can mild personal preferences produce dramatic",
-             "neighbourhood segregation? Schelling's 1971 model:",
-             "even agents content with being a 30% minority will,",
-             "collectively, sort into solid same-type blocks."},
-            "Frame (track segregation index), Seed (reproducible).",
-            {"θ = 0.30 (most agents OK as a minority): the random",
-             "mix segregates within ~60 sec. Crank θ to 0.50 — sharper.",
-             "θ = 0.70 — near-total separation. Macro-segregation does",
-             "NOT require strong individual prejudice."});
+            {"Schelling segregation model. Two groups on a 2D grid;",
+             "agents move when fewer than τ% of neighbours match.",
+             "Sharp segregation emerges from mild preferences."},
+            "Frame (track segregation index), Seed (reproducible)");
     }
 };
 

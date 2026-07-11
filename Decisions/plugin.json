@@ -1,34 +1,34 @@
 {
   "slug": "SHLabs-Decisions",
   "name": "SHLabs Decisions",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "license": "GPL-3.0-or-later",
   "brand": "SHLabs",
   "author": "SHLabs",
   "authorEmail": "hello@shlabs.ch",
   "authorUrl": "https://shlabs.ch",
-  "pluginUrl": "https://shlabs.ch",
-  "manualUrl": "https://github.com/shlabs-audio/stochast/blob/main/docs/modules.md",
+  "pluginUrl": "https://shlabs.ch/stochast/",
+  "manualUrl": "https://shlabs.ch/stochast/",
   "sourceUrl": "https://github.com/shlabs-audio/stochast",
-  "donateUrl": "",
+  "donateUrl": "https://shlabs.ch/donate/",
   "changelogUrl": "https://github.com/shlabs-audio/stochast/blob/main/CHANGELOG.md",
   "modules": [
     {
       "slug": "Prospect",
       "name": "Prospect",
-      "description": "Why do the same people buy insurance AND lottery tickets? Kahneman & Tversky's prospect theory (1979/1992) explains seemingly contradictory risk preferences: losses sting ~2× as much as equivalent gains feel good (loss aversion λ), and rare events get psychologically overweighted (probability weighting w(p)). Transforms an objective outcome CV (gains and losses relative to a reference point of 0 V) and an objective probability CV into subjective value U(x)·w(p). Both transformation functions are visualized in real time so students can see directly which knob produces which behavioural bias.",
+      "description": "Prospect theory (Kahneman & Tversky 1979/1992). Transforms incoming objective outcome CV (gains and losses relative to a reference point) and objective probability CV into subjective value U(x)·w(p), with loss aversion λ, diminishing sensitivity α, and probability weighting γ. Visualizes both the value function and the probability-weighting function. Pedagogical demonstration of why people overweight rare events, prefer certainty, and feel losses ~2× as strongly as equivalent gains.",
       "tags": ["Random", "Logic", "Utility"]
     },
     {
       "slug": "Bandit",
       "name": "Bandit",
-      "description": "Explore vs. exploit — the foundational dilemma in reinforcement learning. A doctor choosing between treatments, an A/B-testing platform deciding when to stop experimenting, a casino with rigged slot machines: all need to balance trying new things against repeating what already works. Bandit runs up to 8 arms with unknown true means and three classic action policies (right-click): ε-greedy (random exploration), UCB1 (upper confidence bound, optimism under uncertainty), and Thompson sampling (Bayesian belief). Per-arm running estimate, pull count, and cumulative regret are visualized live so students can compare strategies head-to-head.",
+      "description": "Multi-armed bandit with up to 8 arms. Right-click selects the action policy: ε-greedy (explore vs exploit), UCB1 (upper confidence bound), or Thompson sampling (Bayesian). Each arm's true reward μ_i is randomized at reset; the agent pulls one arm per tick. Visualizes per-arm running mean estimate, pull count, and cumulative regret. Teaches the exploration–exploitation trade-off, the role of confidence bounds, and Bayesian decision-making, all on one screen.",
       "tags": ["Random", "Logic", "Utility", "Polyphonic"]
     },
     {
       "slug": "DDM",
       "name": "DDM",
-      "description": "Why is a harder discrimination slower? Ratcliff's drift-diffusion model is the standard cognitive-psychology account of two-alternative forced-choice (psychophysics, random-dot motion, perceptual decision-making). Evidence accumulates noisily over time with drift rate v (true signal strength) until it hits one of two boundaries at ±a; whichever boundary is hit determines the choice, and the elapsed time is the reaction time. Outputs the live evidence trace, choice gate, reaction-time CV, and running accuracy. Sweep v from −1 to +1 to watch the speed–accuracy trade-off unfold in real time.",
+      "description": "Drift-diffusion (Ratcliff) choice model. An accumulator integrates noisy evidence with drift rate v (true signal strength) toward two absorbing boundaries at ±a. The trial ends when the accumulator hits a boundary; the choice is determined by which one was hit and the time elapsed is the reaction time. Outputs the live evidence trace, choice gate (high if upper threshold reached), reaction-time CV, and running mean accuracy. The standard cognitive-psychology model of two-alternative forced-choice.",
       "tags": ["Random", "Logic", "Utility"]
     }
   ]

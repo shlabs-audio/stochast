@@ -1,23 +1,23 @@
 {
   "slug": "SHLabs-Epi",
   "name": "SHLabs Epi",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "license": "GPL-3.0-or-later",
   "brand": "SHLabs",
   "author": "SHLabs",
   "authorEmail": "hello@shlabs.ch",
   "authorUrl": "https://shlabs.ch",
-  "pluginUrl": "https://shlabs.ch",
-  "manualUrl": "https://github.com/shlabs-audio/stochast/blob/main/docs/modules.md",
+  "pluginUrl": "https://shlabs.ch/stochast/",
+  "manualUrl": "https://shlabs.ch/stochast/",
   "sourceUrl": "https://github.com/shlabs-audio/stochast",
-  "donateUrl": "",
+  "donateUrl": "https://shlabs.ch/donate/",
   "changelogUrl": "https://github.com/shlabs-audio/stochast/blob/main/CHANGELOG.md",
   "modules": [
     {
       "slug": "Outbreak",
       "name": "Outbreak",
       "description": "Network SIR — infection spreads through an internally generated graph (Watts-Strogatz, Erdős–Rényi, or Barabási–Albert) at rate β per infected neighbour per tick, with recovery rate γ. Network topology dramatically changes outbreak dynamics: small-world graphs spread fast via shortcuts; preferential-attachment hubs become superspreaders. Visualization shows the network coloured by S / I / R state plus a small S/I/R trajectory.",
-      "tags": ["Random", "Utility", "Polyphonic"]
+      "tags": ["Random", "Logic", "Utility", "Polyphonic"]
     }
   ]
 }

@@ -1,46 +1,46 @@
 {
   "slug": "SHLabs-Polis",
   "name": "SHLabs Polis",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "license": "GPL-3.0-or-later",
   "brand": "SHLabs",
   "author": "SHLabs",
   "authorEmail": "hello@shlabs.ch",
   "authorUrl": "https://shlabs.ch",
-  "pluginUrl": "https://shlabs.ch",
-  "manualUrl": "https://github.com/shlabs-audio/stochast/blob/main/docs/modules.md",
+  "pluginUrl": "https://shlabs.ch/stochast/",
+  "manualUrl": "https://shlabs.ch/stochast/",
   "sourceUrl": "https://github.com/shlabs-audio/stochast",
-  "donateUrl": "",
+  "donateUrl": "https://shlabs.ch/donate/",
   "changelogUrl": "https://github.com/shlabs-audio/stochast/blob/main/CHANGELOG.md",
   "modules": [
     {
       "slug": "Cascade",
       "name": "Cascade",
-      "description": "Why do some protests ignite and others fizzle? Granovetter's 1978 threshold model: each agent has a personal threshold of how many *others* must already be acting before they join in. A 'rabid' population with one threshold-0 zealot will cascade from almost no external pressure; an otherwise identical population without that one zealot will not. The ignition point is set not by average sentiment but by the lowest threshold in the chain. Outputs per-agent activation gates, active fraction, delta-active-per-tick, and an ignition pulse.",
+      "description": "Granovetter threshold model of collective behavior. N agents with heterogeneous activation thresholds; an external Pressure signal pushes them past their tipping points one cascade at a time. Outputs active fraction, delta, ignition gate, and per-agent gates.",
       "tags": ["Logic", "Random", "Utility", "Polyphonic"]
     },
     {
       "slug": "Discourse",
       "name": "Discourse",
-      "description": "How do echo chambers form? Deffuant–Weisbuch bounded-confidence dynamics: agents only update their opinion when they meet someone already close to them. Set the confidence threshold ε high (broad open-mindedness) and the population converges to a single consensus; set ε low (narrow tolerance) and it fragments into several stable opinion clusters that no longer talk to each other. A live model of polarization, opinion clustering, and the formation of incompatible 'epistemic bubbles'. Outputs polyphonic per-agent values, mean, variance, cluster count.",
+      "description": "Deffuant-Weisbuch bounded-confidence convergence model. N agents hold continuous values on [0,1]; at each tick random pairs interact only if their values are within a confidence threshold ε, and pull toward each other by μ. Over time the population fragments into 1..N stable value clusters. Outputs polyphonic values, mean, variance, cluster count.",
       "tags": ["Random", "Utility", "Polyphonic"]
     },
     {
       "slug": "Pareto",
       "name": "Pareto",
-      "description": "Where does wealth inequality come from? Even with *fair* coin flips and no inherent advantages, pairwise random trading produces a winner-take-all distribution — the 'yard-sale model' of Chakraborti (2002) and Boghosian (2014). No bias, no skill, no fraud: just trading. Start with everyone equal and watch the Gini coefficient climb from 0 toward 1 as wealth condenses on a single agent. Adding BIAS (advantage to the larger pile) accelerates concentration; adding POOL (mean-field redistribution) creates non-trivial steady states. Outputs polyphonic value shares, Gini, top share, concentration gate.",
+      "description": "Stochastic pairwise exchange model (Chakraborti / Boghosian). N agents hold a positive value; random pairs exchange a fraction of the smaller value. Even with fair coin flips, the value condenses on a single agent — adding BIAS (advantage to the higher side) accelerates concentration; adding POOL (mean-field redistribution) creates non-trivial steady-state distributions. Outputs polyphonic value shares, Gini coefficient, top share, concentration gate.",
       "tags": ["Random", "Utility", "Polyphonic"]
     },
     {
       "slug": "Dilemma",
       "name": "Dilemma",
-      "description": "Can cooperation evolve from purely selfish agents? Axelrod's 1980 round-robin Prisoner's Dilemma tournament showed: yes, if relationships repeat. Dilemma runs an iterated PD between four classic strategies (ALL_C, ALL_D, TFT, GRIM). Tit-for-tat (TFT) wins in a quiet world by being nice, provokable, and forgiving. Crank the NOISE knob and watch cooperation collapse: a single misread action between two TFTs starts a defection feud that neither can stop. A live demonstration that cooperation is real but fragile.",
+      "description": "Iterated Prisoner's Dilemma round-robin tournament. N agents (assigned to one of four strategies: ALL_C / ALL_D / TFT / GRIM) play pairwise PD each round. MIX biases strategy distribution; PAYOFF tilts the temptation term; NOISE adds action errors that break TFT's nice cooperation. Outputs per-agent cooperation gates, mean cooperation, average score, sucker gate.",
       "tags": ["Random", "Logic", "Utility", "Polyphonic"]
     },
     {
       "slug": "Diffusion",
       "name": "Diffusion",
-      "description": "Why does every viral product look like an S-curve? Bass's 1969 diffusion-of-innovations model: a small minority adopts spontaneously (innovation rate p), the rest adopt by imitating already-adopters (imitation rate q × adopter fraction). The result is the canonical S — slow start driven by innovators, accelerating middle driven by imitators, plateau as the pool of non-adopters thins. Patch a Polis/Network module to Diffusion's left and the dynamics switch from well-mixed mass-action to graph-aware peer transmission: hubs adopt early on a Barabási–Albert network and dramatically accelerate the curve. Outputs per-agent adoption gates, fraction adopted, adoption rate, saturation gate.",
+      "description": "Bass innovation-adoption dynamics. N agents are either adopters or not; each tick each non-adopter has probability p + q·f of adopting, where p is the innovation rate (spontaneous), q is the imitation rate (peer-driven), and f is the current adoption fraction. Produces the canonical S-curve: slow early uptake driven by innovators, accelerating middle phase driven by imitators, plateau as the pool of non-adopters thins. Outputs per-agent adoption gates, fraction adopted, adoption rate, saturation gate. Adoption is irreversible (consistent with the standard Bass model).",
       "tags": ["Random", "Logic", "Utility", "Polyphonic"]
     },
     {

@@ -125,16 +125,6 @@ struct Regress : Module {
         }
         return 1.96f;
     }
-    // Student-t multiplier for the OLS confidence band at df = n - 2. Uses
-    // Cornish–Fisher expansion: t_{1-α/2}(df) ≈ z + (z + z^3)/(4 df). Better
-    // than the normal-z multiplier at small n (e.g. df=5, the t multiplier
-    // is ~2.57 vs z=1.96 — band would otherwise be ~25% too tight).
-    float currentT(int n) {
-        float z = currentZ();
-        int df = n - 2;
-        if (df < 1) return z;
-        return z + (z + z * z * z) / (4.f * df);
-    }
 
     int effectiveN() {
         int mode = currentMode();
@@ -345,18 +335,15 @@ struct RegressView : LightWidget {
         if (n > 2 && module->mse > 0.f && module->sumSqDevX > 1e-9f) {
             const int kBandN = 40;
             std::array<float, kBandN> bx, bLo, bHi;
-            // Use the Student-t multiplier with df = n - 2 (the residual df
-            // for simple OLS) instead of the normal-z. Matches the textbook
-            // confidence band and is materially wider at small n.
-            float t = module->currentT(n);
+            float z = module->currentZ();
             for (int i = 0; i < kBandN; ++i) {
                 float xv = xMin + (xMax - xMin) * i / (float)(kBandN - 1);
                 float yHat = module->alpha + module->beta * xv;
                 float se = std::sqrt(module->mse *
                                      (1.f / n + (xv - module->meanX) * (xv - module->meanX) / module->sumSqDevX));
                 bx[i] = xv;
-                bLo[i] = yHat - t * se;
-                bHi[i] = yHat + t * se;
+                bLo[i] = yHat - z * se;
+                bHi[i] = yHat + z * se;
             }
             nvgBeginPath(vg);
             nvgMoveTo(vg, mapX(bx[0]), mapY(bLo[0]));

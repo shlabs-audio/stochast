@@ -98,12 +98,12 @@ struct DDM : Module {
         configParam(NOISE_PARAM, 0.f, 3.f, 1.0f, "Within-trial noise σ");
         configParam(BIAS_PARAM, -1.f, 1.f, 0.f, "Starting-point bias z");
         configButton(SHUFFLE_PARAM, "Reset trace + accuracy counter");
-        configInput(CLOCK_INPUT, "Clock — integration step rate (internal 200 Hz)");
+        configInput(CLOCK_INPUT, "Clock — integration step rate (internal 120 Hz)");
         configInput(RESET_INPUT, "Reset (restart trial + clear accuracy)");
         configInput(DRIFT_CV_INPUT, "Drift CV (±10 V → ±1 added to v)");
         configOutput(EVID_OUTPUT, "Live evidence x_t scaled to ±a → ±10 V");
         configOutput(CHOICE_OUTPUT, "Choice gate (pulses when upper boundary hit)");
-        configOutput(RT_OUTPUT, "Reaction time of last completed trial");
+        configOutput(RT_OUTPUT, "Reaction time of last completed trial (2 V/second)");
         configOutput(ACC_OUTPUT, "Running accuracy (0..10 V)");
         restartTrial();
     }
@@ -227,25 +227,6 @@ struct DDM : Module {
         outputs[RT_OUTPUT].setVoltage(clamp(lastRT * 2.f, 0.f, 12.f));
         float acc = (trials > 0) ? (float)correct / trials : 0.f;
         outputs[ACC_OUTPUT].setVoltage(clamp(acc, 0.f, 1.f) * 10.f);
-    }
-
-    json_t* dataToJson() override {
-        json_t* root = json_object();
-        json_object_set_new(root, "seedVal", json_integer((json_int_t)seedVal));
-        json_object_set_new(root, "x", json_real(x));
-        json_object_set_new(root, "trialSteps", json_integer(trialSteps));
-        json_object_set_new(root, "trials",     json_integer(trials));
-        json_object_set_new(root, "correct",    json_integer(correct));
-        json_object_set_new(root, "lastRT",     json_real(lastRT));
-        return root;
-    }
-    void dataFromJson(json_t* root) override {
-        if (auto* j = json_object_get(root, "seedVal"))    seedVal    = (uint32_t)json_integer_value(j);
-        if (auto* j = json_object_get(root, "x"))          x          = (float)json_number_value(j);
-        if (auto* j = json_object_get(root, "trialSteps")) trialSteps = (int)json_integer_value(j);
-        if (auto* j = json_object_get(root, "trials"))     trials     = (int)json_integer_value(j);
-        if (auto* j = json_object_get(root, "correct"))    correct    = (int)json_integer_value(j);
-        if (auto* j = json_object_get(root, "lastRT"))     lastRT     = (float)json_number_value(j);
     }
 };
 
@@ -392,10 +373,12 @@ struct DDMWidget : ModuleWidget {
         labels->out(2, "RT");   labels->out(3, "ACC");
         addChild(labels);
 
-        addChild(createWidget<ScrewSilver>(Vec(15, 0)));
-        addChild(createWidget<ScrewSilver>(Vec(270, 0)));
-        addChild(createWidget<ScrewSilver>(Vec(15, 365)));
-        addChild(createWidget<ScrewSilver>(Vec(270, 365)));
+        // Corners flush at {0, 285} (family 300px convention) so the bottom-right
+        // screw clears the x=270 output-jack column.
+        addChild(createWidget<ScrewSilver>(Vec(0, 0)));
+        addChild(createWidget<ScrewSilver>(Vec(285, 0)));
+        addChild(createWidget<ScrewSilver>(Vec(0, 365)));
+        addChild(createWidget<ScrewSilver>(Vec(285, 365)));
 
         auto* view = new DDMView;
         view->module = module;
@@ -440,14 +423,10 @@ struct DDMWidget : ModuleWidget {
 
     void appendContextMenu(Menu* menu) override {
         appendAboutMenu(menu, "DDM",
-            {"Why is a harder discrimination slower? Ratcliff's drift-",
-             "diffusion model — the standard cognitive-psychology",
-             "account of two-alternative forced-choice. Evidence",
-             "accumulates noisily; the boundary it hits is the choice."},
-            "Gauge (preset 'RT (ms)'), Frame (mean RT).",
-            {"Sweep drift v from −1 to +1. At v ≈ 0: slow, ~50% accuracy.",
-             "At v = ±1: fast and accurate. Crank σ (noise) on top:",
-             "watch the same drift produce variable reaction times."});
+            {"Ratcliff drift-diffusion model of decision-making.",
+             "A noisy evidence accumulator drifts until it hits an upper",
+             "or lower boundary — outputs choice, response time and trace."},
+            "Gauge (preset 'RT (ms)' for RT output), Frame (mean RT)");
     }
 };
 

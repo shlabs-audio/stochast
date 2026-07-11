@@ -196,14 +196,10 @@ struct Life : Module {
         outputs[OSC_OUTPUT].setVoltage(oscPulse > 0.f ? 10.f : 0.f);
         lights[OSC_LIGHT].setBrightness(oscPulse > 0.f ? 1.f : 0.f);
 
-        // Per-row live counts on 16 of the 24 rows, evenly spaced. The
-        // earlier formula y = c*(kGrid-1)/15 mapped channel 15 to row 23
-        // but skipped row 22; this maps channels 0..15 to rows 0,1,3,4,6,7,
-        // 9,10,12,13,15,16,18,19,21,22 — uniformly stepped by 1.5 modulo
-        // the integer-truncation pattern.
+        // Per-row live counts on 16 of the 24 rows (every 1.5 rows)
         outputs[ROW_OUTPUT].setChannels(16);
         for (int c = 0; c < 16; ++c) {
-            int y = (c * kGrid) / 16;
+            int y = (c * (kGrid - 1)) / 15;
             int rowAlive = 0;
             for (int x = 0; x < kGrid; ++x) rowAlive += grid[y][x];
             outputs[ROW_OUTPUT].setVoltage(10.f * (float)rowAlive / kGrid, c);
@@ -213,42 +209,20 @@ struct Life : Module {
     // Right-click rule presets
     void setRule(int b, int s) { birthMask = b; surviveMask = s; }
 
+    // Only the seed + rule are persisted; the live grid is intentionally not
+    // serialized, so save/reload restores a reproducible-from-seed state
+    // rather than the in-progress pattern.
     json_t* dataToJson() override {
         json_t* root = json_object();
         json_object_set_new(root, "birthMask",   json_integer(birthMask));
         json_object_set_new(root, "surviveMask", json_integer(surviveMask));
         json_object_set_new(root, "seedVal",     json_integer((json_int_t)seedVal));
-        json_object_set_new(root, "aliveCount",  json_integer(aliveCount));
-        json_object_set_new(root, "generation",  json_integer(generation));
-        // Pack the 24×24 grid into one int per row (lower 24 bits = cells).
-        json_t* gridArr = json_array();
-        for (int y = 0; y < kGrid; ++y) {
-            uint32_t row = 0;
-            for (int x = 0; x < kGrid; ++x)
-                if (grid[y][x]) row |= (1u << x);
-            json_array_append_new(gridArr, json_integer((json_int_t)row));
-        }
-        json_object_set_new(root, "grid", gridArr);
         return root;
     }
     void dataFromJson(json_t* root) override {
         if (auto* j = json_object_get(root, "birthMask"))   birthMask   = json_integer_value(j);
         if (auto* j = json_object_get(root, "surviveMask")) surviveMask = json_integer_value(j);
         if (auto* j = json_object_get(root, "seedVal"))     seedVal     = (uint32_t)json_integer_value(j);
-        if (auto* j = json_object_get(root, "aliveCount"))  aliveCount  = (int)json_integer_value(j);
-        if (auto* j = json_object_get(root, "generation"))  generation  = (int)json_integer_value(j);
-        if (auto* gridArr = json_object_get(root, "grid")) {
-            if (json_is_array(gridArr)) {
-                size_t n = std::min((size_t)kGrid, json_array_size(gridArr));
-                for (size_t y = 0; y < n; ++y) {
-                    json_t* rowJ = json_array_get(gridArr, y);
-                    if (!json_is_integer(rowJ)) continue;
-                    uint32_t row = (uint32_t)json_integer_value(rowJ);
-                    for (int x = 0; x < kGrid; ++x)
-                        grid[y][x] = (row >> x) & 1u;
-                }
-            }
-        }
     }
 };
 

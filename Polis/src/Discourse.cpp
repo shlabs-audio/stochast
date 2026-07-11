@@ -188,26 +188,6 @@ struct Discourse : Module {
         float clusterFrac = (float)countClusters(currentTalk()) / std::max(1, N);
         outputs[CLUSTERS_OUTPUT].setVoltage(clusterFrac * 10.f);
     }
-
-    json_t* dataToJson() override {
-        json_t* root = json_object();
-        json_t* arr = json_array();
-        for (int i = 0; i < kMaxN; ++i)
-            json_array_append_new(arr, json_real(values[i]));
-        json_object_set_new(root, "values", arr);
-        return root;
-    }
-    void dataFromJson(json_t* root) override {
-        if (auto* arr = json_object_get(root, "values")) {
-            if (json_is_array(arr)) {
-                size_t n = std::min((size_t)kMaxN, json_array_size(arr));
-                for (size_t i = 0; i < n; ++i) {
-                    json_t* v = json_array_get(arr, i);
-                    if (json_is_number(v)) values[i] = (float)json_number_value(v);
-                }
-            }
-        }
-    }
 };
 
 // ============================================================================
@@ -403,15 +383,10 @@ struct DiscourseWidget : ModuleWidget {
 
     void appendContextMenu(Menu* menu) override {
         appendAboutMenu(menu, "Discourse",
-            {"How do echo chambers form? Deffuant–Weisbuch bounded-",
-             "confidence: agents only update their opinion when they",
-             "meet someone already close to them. Live demonstration",
-             "of polarization vs. consensus."},
-            "Seed (replicate runs), Frame (mean opinion variance).",
-            {"ε = 0.4 (broad tolerance): population converges to a",
-             "single opinion. Reset, ε = 0.15: stable opinion clusters",
-             "that no longer interact. Real opinion dynamics live in",
-             "the middle. The cluster-count output shows it numerically."});
+            {"Deffuant bounded-confidence opinion dynamics.",
+             "N agents on a 1D opinion axis; pairs interact when",
+             "within tolerance ε. Watch consensus or polarisation emerge."},
+            "Cascade (threshold tipping), Dilemma (strategic interaction)");
     }
 };
 

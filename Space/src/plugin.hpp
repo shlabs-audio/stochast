@@ -31,10 +31,17 @@ struct ModuleTitle : Widget {
         nvgTextLetterSpacing(vg, 1.f);
         nvgText(vg, box.size.x / 2.f,         18.f, text.c_str(), nullptr);
         nvgText(vg, box.size.x / 2.f + 0.4f,  18.f, text.c_str(), nullptr);
+
+        // Universal SHLabs maker's mark — bottom-centre, identical on every module.
+        nvgFontSize(vg, 7.f);
+        nvgFillColor(vg, nvgRGB(0x6e, 0x72, 0x7c));
+        nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
+        nvgTextLetterSpacing(vg, 3.f);
+        nvgText(vg, box.size.x / 2.f, 375.f, "SHLABS", nullptr);
     }
 };
 
-// 20HP panel labels via NanoVG. See Methods/plugin.hpp for the full spec.
+// 20HP panel labels via NanoVG.
 struct PanelLabels : Widget {
     struct Item {
         float x, y, fontSize;
@@ -96,25 +103,18 @@ struct PanelLabels : Widget {
     }
 };
 
-// Right-click "What does this do?" helper. See Methods/plugin.hpp.
+// Right-click "What does this do?" helper.
 inline void appendAboutMenu(Menu* menu,
                             const std::string& name,
                             const std::vector<std::string>& headlineLines,
-                            const std::string& companions,
-                            const std::vector<std::string>& tryThisLines = {}) {
+                            const std::string& companions) {
     menu->addChild(new MenuSeparator);
     menu->addChild(createSubmenuItem("What does this do?", "",
-        [name, headlineLines, companions, tryThisLines](Menu* sub) {
+        [name, headlineLines, companions](Menu* sub) {
             sub->addChild(createMenuLabel(name));
             sub->addChild(new MenuSeparator);
             for (const auto& line : headlineLines)
                 sub->addChild(createMenuLabel(line));
-            if (!tryThisLines.empty()) {
-                sub->addChild(new MenuSeparator);
-                sub->addChild(createMenuLabel("Try this:"));
-                for (const auto& line : tryThisLines)
-                    sub->addChild(createMenuLabel(line));
-            }
             sub->addChild(new MenuSeparator);
             sub->addChild(createMenuLabel("Companions:"));
             sub->addChild(createMenuLabel(companions));

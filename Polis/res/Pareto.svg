@@ -17,40 +17,13 @@
   <!-- family-stripe --><rect x="0" y="36" width="300" height="3" fill="#cf8a4f" opacity="0.75"/>
   <rect x="10" y="44" width="280" height="190" fill="#080a10" stroke="#2b2f42" stroke-width="0.5"/>
 
-  <g fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
-     font-size="8" text-anchor="middle" letter-spacing="1.5">
-    <text x="45"  y="246">POP</text>
-    <text x="120" y="246">TRADE</text>
-    <text x="195" y="246">BIAS</text>
-    <text x="270" y="246">POOL</text>
-  </g>
-
-  <g fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
-     font-size="7.5" text-anchor="middle" letter-spacing="1.5">
-    <text x="120" y="282">RATE</text>
-    <text x="270" y="282">SHUFFLE</text>
-  </g>
-
-  <text x="10" y="313" fill="#6a7088" font-family="Helvetica, Arial, sans-serif"
-        font-size="7" font-weight="bold" letter-spacing="2">IN</text>
-  <g fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
-     font-size="7.5" text-anchor="middle" letter-spacing="1.2">
-    <text x="45"  y="313">CLOCK</text>
-    <text x="120" y="313">RESET</text>
-    <text x="195" y="313">P·CV</text>
-  </g>
-
-  <text x="10" y="344" fill="#6a7088" font-family="Helvetica, Arial, sans-serif"
-        font-size="7" font-weight="bold" letter-spacing="2">OUT</text>
-  <g fill="#9aa0b4" font-family="Helvetica, Arial, sans-serif"
-     font-size="7.5" text-anchor="middle" letter-spacing="1.2">
-    <text x="45"  y="344">VAL</text>
-    <text x="120" y="344">GINI</text>
-    <text x="195" y="344">TOP</text>
-    <text x="270" y="344">CONC</text>
-  </g>
-
+  <!-- Section divider rules. All panel text (knob / IN / OUT labels, module
+       title and maker's mark) is drawn at runtime via NanoVG; VCV's NanoSVG
+       parser does not render SVG <text>, so none is embedded here. -->
   <line x1="8" y1="238" x2="292" y2="238" stroke="#2b2f42" stroke-width="0.4"/>
   <line x1="8" y1="305" x2="292" y2="305" stroke="#2b2f42" stroke-width="0.4"/>
   <line x1="8" y1="350" x2="292" y2="350" stroke="#2b2f42" stroke-width="0.4"/>
+
+  <!-- bottom steel rule -->
+  <rect x="0" y="378" width="300" height="2" fill="url(#strip)"/>
 </svg>

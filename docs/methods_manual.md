@@ -19,7 +19,7 @@ voltage you can patch as generative, modulation, or sequencing
 material. The accompanying technical notes cover the numerics and the
 analog-computer lineage; this manual stays close to the keys, knobs,
 and jacks. (For *teaching* statistics, reach for the browser-based
-Empiria web app at <https://kevinschoenholzer.com/empiria/> instead.)
+Empiria web app at <https://shlabs.ch/empiria/> instead.)
 
 The wider Stochast suite includes four additional plugins (**Polis**,
 **Epi**, **Space**, **Decisions**) covering agent-based social

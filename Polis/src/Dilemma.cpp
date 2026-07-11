@@ -288,42 +288,6 @@ struct Dilemma : Module {
         outputs[SUCKER_OUTPUT].setVoltage(s ? 10.f : 0.f);
         lights[SUCKER_LIGHT].setBrightness(s ? 1.f : 0.f);
     }
-
-    json_t* dataToJson() override {
-        json_t* root = json_object();
-        json_object_set_new(root, "roundsPlayed", json_integer(roundsPlayed));
-        json_t* strat = json_array();
-        json_t* score = json_array();
-        for (int i = 0; i < kMaxN; ++i) {
-            json_array_append_new(strat, json_integer(strategies[i]));
-            json_array_append_new(score, json_real(totalScore[i]));
-        }
-        json_object_set_new(root, "strategies", strat);
-        json_object_set_new(root, "totalScore", score);
-        return root;
-    }
-    void dataFromJson(json_t* root) override {
-        if (auto* j = json_object_get(root, "roundsPlayed"))
-            roundsPlayed = (int)json_integer_value(j);
-        if (auto* arr = json_object_get(root, "strategies")) {
-            if (json_is_array(arr)) {
-                size_t n = std::min((size_t)kMaxN, json_array_size(arr));
-                for (size_t i = 0; i < n; ++i) {
-                    json_t* v = json_array_get(arr, i);
-                    if (json_is_integer(v)) strategies[i] = (int)json_integer_value(v);
-                }
-            }
-        }
-        if (auto* arr = json_object_get(root, "totalScore")) {
-            if (json_is_array(arr)) {
-                size_t n = std::min((size_t)kMaxN, json_array_size(arr));
-                for (size_t i = 0; i < n; ++i) {
-                    json_t* v = json_array_get(arr, i);
-                    if (json_is_number(v)) totalScore[i] = (float)json_number_value(v);
-                }
-            }
-        }
-    }
 };
 
 // ============================================================================
@@ -521,14 +485,10 @@ struct DilemmaWidget : ModuleWidget {
 
     void appendContextMenu(Menu* menu) override {
         appendAboutMenu(menu, "Dilemma",
-            {"Can cooperation evolve from selfish agents? Axelrod's",
-             "1980 tournament: yes, if the relationship repeats.",
-             "Tit-for-tat (TFT) wins a quiet world; noise breaks it."},
-            "Tape (record payoff stream), Frame (mean payoff).",
-            {"MIX = TFT-heavy population, NOISE = 0: cooperation",
-             "stable, mean payoff high. Crank NOISE to ~0.1: a misread",
-             "starts a defection feud between two TFTs and they can't",
-             "stop. Real-world cooperation is real but fragile."});
+            {"Iterated 2x2 game (Prisoner's Dilemma, Stag Hunt, ...).",
+             "Strategies (TFT, ALLD, GRIM, ...) play repeatedly and",
+             "the payoff stream becomes a CV."},
+            "Pareto (exchange dynamics), Cascade (collective tipping)");
     }
 };
 

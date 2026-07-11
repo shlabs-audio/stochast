@@ -59,3 +59,6 @@ submission/jsdse_latex/empiria_anonymous.pdf
 LIBRARY_SUBMISSION.md
 docs/design_spec.md
 docs/design_notes/
+
+# Release asset staging (local only)
+release-assets/

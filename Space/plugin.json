@@ -1,16 +1,16 @@
 {
   "slug": "SHLabs-Space",
   "name": "SHLabs Space",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "license": "GPL-3.0-or-later",
   "brand": "SHLabs",
   "author": "SHLabs",
   "authorEmail": "hello@shlabs.ch",
   "authorUrl": "https://shlabs.ch",
-  "pluginUrl": "https://shlabs.ch",
-  "manualUrl": "https://github.com/shlabs-audio/stochast/blob/main/docs/modules.md",
+  "pluginUrl": "https://shlabs.ch/stochast/",
+  "manualUrl": "https://shlabs.ch/stochast/",
   "sourceUrl": "https://github.com/shlabs-audio/stochast",
-  "donateUrl": "",
+  "donateUrl": "https://shlabs.ch/donate/",
   "changelogUrl": "https://github.com/shlabs-audio/stochast/blob/main/CHANGELOG.md",
   "modules": [
     {
@@ -22,14 +22,14 @@
     {
       "slug": "Schelling",
       "name": "Schelling",
-      "description": "How can mild personal preferences produce dramatic group segregation? Schelling's 1971 model proved that even a *weak* same-type preference — agents content with being a 30 % minority — produces a fully segregated city when the dynamics play out. Macro-segregation does not require strong individual prejudice. On a 24×24 grid with two populations + empty cells, unhappy agents relocate; over a few minutes the random mix sorts itself into solid red and blue blocks. Outputs segregation index, unhappy fraction, average local same-type fraction, and a segregated gate.",
+      "description": "Schelling segregation model on a 24×24 grid. Two populations (red, blue) plus empty cells. Each agent is content if a fraction ≥ θ of its 8 neighbours are same-type; unhappy agents relocate to a random empty cell. Demonstrates that mild same-type preference (θ = 0.30) produces dramatic large-scale segregation. Outputs segregation index, unhappy fraction, average local same-type fraction, and a 'segregated' gate.",
       "tags": ["Random", "Logic", "Utility", "Polyphonic"]
     },
     {
       "slug": "Turing",
       "name": "Turing",
-      "description": "How does a leopard get its spots? Alan Turing's 1952 reaction-diffusion mechanism — the foundation of mathematical biology's account of pattern formation. Two chemicals u (substrate) and v (autocatalyst) diffuse and react across a 2D field; tiny initial perturbations grow into stable patterns. Different feed-rate F and kill-rate k pairs produce spots (leopard), stripes (zebra), labyrinth, or moving solitons. The same equations describe coat patterns, chemical clocks, sand-dune ripples, and certain ecological systems — pattern from no master plan, just local rules.",
-      "tags": ["Random", "Logic", "Utility"]
+      "description": "Gray-Scott reaction-diffusion on a 48×48 grid. Two chemicals u and v diffuse and react; u + 2v → 3v (autocatalysis), v → P (decay). Feed rate F and kill rate k control the steady state. Different (F, k) produce spots, stripes, labyrinth, or solitons — Turing's mechanism for biological pattern formation. Outputs mean u, mean v, pattern variance, and an oscillation gate.",
+      "tags": ["Random", "Logic", "Utility", "Polyphonic"]
     }
   ]
 }

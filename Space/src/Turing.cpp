@@ -62,9 +62,9 @@ struct Turing : Module {
     std::array<std::array<float, kGrid>, kGrid> u{}, v{}, uNext{}, vNext{};
     float meanU = 1.f, meanV = 0.f, varV = 0.f, prevVarV = 0.f;
     float oscPulse = 0.f;
+    int statTimer = 0;      // per-instance stat-recompute counter
 
     float internalPhase = 0.f;
-    int statTimer = 0;        // per-instance — was a function-local static
     dsp::SchmittTrigger clockTrig, resetTrig, shuffleBtn;
     std::mt19937 rng;
     uint32_t seedVal = 0x4ABCDEF1u;
@@ -73,7 +73,7 @@ struct Turing : Module {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(F_PARAM, 0.005f, 0.12f, 0.040f, "Feed rate F");
         configParam(K_PARAM, 0.030f, 0.080f, 0.060f, "Kill rate k");
-        configParam(DU_PARAM, 0.05f, 0.30f, 0.16f, "Du — u diffusion");
+        configParam(DU_PARAM, 0.05f, 0.30f, 0.16f, "Du — u diffusion (>0.25 may be unstable at dt=1)");
         configParam(DV_PARAM, 0.02f, 0.20f, 0.08f, "Dv — v diffusion");
         configButton(SHUFFLE_PARAM, "Re-seed (random v perturbation)");
         configInput(CLOCK_INPUT, "Clock — diffusion sub-step rate (internal 240 Hz if unpatched)");
@@ -107,6 +107,7 @@ struct Turing : Module {
                 v[yy][xx] = 0.25f + noise(rng);
             }
         meanU = 1.f; meanV = 0.f; varV = 0.f; prevVarV = 0.f;
+        statTimer = 0;
     }
 
     float currentF() {
@@ -177,20 +178,7 @@ struct Turing : Module {
 
         bool tick = false;
         if (inputs[CLOCK_INPUT].isConnected()) {
-            // Cap substeps per process() call so an audio-rate clock
-            // (each tick = up to ~110M cell ops/s on the audio thread)
-            // can't glitch playback. We absorb at most kMaxSubstepsPerCall
-            // ticks per audio sample; extra triggers within the same
-            // sample are dropped.
-            constexpr int kMaxSubstepsPerCall = 1;
-            int taken = 0;
-            while (taken < kMaxSubstepsPerCall &&
-                   clockTrig.process(inputs[CLOCK_INPUT].getVoltage(), 0.1f, 1.f)) {
-                tick = true;  ++taken;
-            }
-            // SchmittTrigger.process returns true at most once per call in
-            // practice; the while-loop is defensive and reduces to a single
-            // tick in normal usage.
+            if (clockTrig.process(inputs[CLOCK_INPUT].getVoltage(), 0.1f, 1.f)) tick = true;
         } else {
             internalPhase += args.sampleTime * kInternalHz;
             if (internalPhase >= 1.f) { internalPhase -= 1.f; tick = true; }
@@ -212,35 +200,11 @@ struct Turing : Module {
     json_t* dataToJson() override {
         json_t* root = json_object();
         json_object_set_new(root, "seedVal", json_integer((json_int_t)seedVal));
-        // Persist the u and v concentration grids. 48×48×2 = 4608 floats per
-        // grid; the JSON is ~50KB per Turing instance which is the price of
-        // resumable reaction-diffusion patterns. Stored as flat arrays.
-        json_t* uArr = json_array();
-        json_t* vArr = json_array();
-        for (int y = 0; y < kGrid; ++y)
-            for (int x = 0; x < kGrid; ++x) {
-                json_array_append_new(uArr, json_real(u[y][x]));
-                json_array_append_new(vArr, json_real(v[y][x]));
-            }
-        json_object_set_new(root, "u", uArr);
-        json_object_set_new(root, "v", vArr);
         return root;
     }
     void dataFromJson(json_t* root) override {
         if (auto* j = json_object_get(root, "seedVal"))
             seedVal = (uint32_t)json_integer_value(j);
-        auto loadFlat = [](json_t* arr, std::array<std::array<float, kGrid>, kGrid>& dst) {
-            if (!arr || !json_is_array(arr)) return;
-            size_t idx = 0;
-            for (int y = 0; y < kGrid; ++y)
-                for (int x = 0; x < kGrid; ++x, ++idx) {
-                    if (idx >= json_array_size(arr)) return;
-                    json_t* v = json_array_get(arr, idx);
-                    if (json_is_number(v)) dst[y][x] = (float)json_number_value(v);
-                }
-        };
-        loadFlat(json_object_get(root, "u"), u);
-        loadFlat(json_object_get(root, "v"), v);
     }
 };
 
@@ -364,8 +328,9 @@ struct TuringWidget : ModuleWidget {
 
         addParam(createParamCentered<VCVButton>(
             Vec(45, 294), module, Turing::SHUFFLE_PARAM));
+        // Beside the button, clear of the 'SHUF' label at y=282
         addChild(createLightCentered<SmallLight<YellowLight>>(
-            Vec(45, 280), module, Turing::SHUFFLE_LIGHT));
+            Vec(66, 294), module, Turing::SHUFFLE_LIGHT));
 
         addInput(createInputCentered<PJ301MPort>(
             Vec(45,  327), module, Turing::CLOCK_INPUT));
@@ -384,21 +349,17 @@ struct TuringWidget : ModuleWidget {
             Vec(195, 358), module, Turing::VAR_OUTPUT));
         addOutput(createOutputCentered<PJ301MPort>(
             Vec(270, 358), module, Turing::OSC_OUTPUT));
+        // In the gap between the VAR and OSC ports, clear of the 'OSC' label
         addChild(createLightCentered<SmallLight<GreenLight>>(
-            Vec(270, 344), module, Turing::OSC_LIGHT));
+            Vec(222, 358), module, Turing::OSC_LIGHT));
     }
 
     void appendContextMenu(Menu* menu) override {
         appendAboutMenu(menu, "Turing",
-            {"How does a leopard get its spots? Alan Turing's 1952",
-             "reaction-diffusion: two chemicals u and v diffuse and",
-             "react on a 2D field; tiny perturbations grow into",
-             "stable patterns — animal coats, chemical clocks, dunes."},
-            "Tape (record pattern growth), Seed (reproducible).",
-            {"F = 0.040, k = 0.060 (default): spots emerge in ~15 sec.",
-             "Move F = 0.030 — stripes. F = 0.025, k = 0.055 — labyrinth.",
-             "F = 0.020, k = 0.050 — solitons drift across the field.",
-             "Same equations; different worlds."});
+            {"Turing reaction-diffusion (Gray-Scott style) on a 2D grid.",
+             "Generates emergent patterns — spots, stripes, labyrinths —",
+             "from local chemical-kinetics rules."},
+            "Tape (record pattern's growth as CV), Seed (reproducible)");
     }
 };
 

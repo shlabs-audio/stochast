@@ -6,7 +6,6 @@ material with genuinely correct math under the hood.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![VCV Rack 2](https://img.shields.io/badge/VCV%20Rack-2.x-brightgreen.svg)](https://vcvrack.com)
-[![ORCID](https://img.shields.io/badge/ORCID-0000--0001--9892--5869-A6CE39.svg)](https://orcid.org/0000-0001-9892-5869)
 
 Each Stochast module is a genuine statistical, agent-based, or dynamical
 process — a bootstrap resampler, a Granovetter cascade, an SIR epidemic, a
@@ -21,7 +20,7 @@ reproducible and the numbers are correct on macOS, Windows, and Linux. It
 just happens to be fun.
 
 > **Looking to teach or learn statistics?** That's the job of the
-> browser-based **[Empiria web app](https://kevinschoenholzer.com/empiria/)** —
+> browser-based **[Empiria web app](https://shlabs.ch/empiria/)** —
 > a separate, classroom-focused tool. Stochast is the music-side sibling:
 > the same real math, repurposed as modular-synth instruments.
 
@@ -49,7 +48,9 @@ under GPL-3.0. Technical notes on the methods and the numerics live in
    sufficient). Launch it once so it creates its plugin folder.
 2. Download a release `.vcvplugin` archive from the
    [Releases page](https://github.com/shlabs-audio/stochast/releases),
-   drop it into the plugin folder, and restart Rack.
+   drop it into the plugin folder, and restart Rack. (An official
+   VCV Library listing is coming — once it lands you'll be able to
+   subscribe and auto-update from inside Rack.)
 3. Open one of the starter patches in [`patches/`](patches/), press
    play, and explore.
 
@@ -121,7 +122,7 @@ credit it, cite the software:
 ```
 
 For teaching statistics specifically, see the
-[Empiria web app](https://kevinschoenholzer.com/empiria/).
+[Empiria web app](https://shlabs.ch/empiria/).
 
 ---
 
@@ -135,21 +136,16 @@ follow VCV Rack's licensing.
 
 ---
 
-## Author
+## Maintainer
 
-**SHLabs**
-Postdoctoral Researcher
-Università della Svizzera italiana (USI), Lugano, Switzerland
-ORCID: [0000-0001-9892-5869](https://orcid.org/0000-0001-9892-5869)
+**SHLabs** — an open-source audio imprint.
 Web: <https://shlabs.ch>
-
-Stochast is released through the author's personal open-source imprint
-**SHLabs**.
+Contact: <hello@shlabs.ch>
 
 ---
 
 ## Acknowledgements
 
-The author thanks the VCV Rack developer community for the modular
-plugin SDK and example modules, and acknowledges the long open-source
-tradition of computational social science on which Stochast draws.
+Thanks to the VCV Rack developer community for the modular plugin SDK
+and example modules, and to the long open-source tradition of
+computational social science on which Stochast draws.

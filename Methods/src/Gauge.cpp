@@ -114,7 +114,6 @@ struct Gauge : Module {
     enum LightId  { NUM_LIGHTS };
 
     int   currentPreset = PRESET_VOLTAGE;
-    int   frameCount = 0;           // per-instance throttle for the ~120Hz history
     float lastValueV       = 0.f;   // raw V observed on input ch0
     float lastValueScaled  = 0.f;   // scaled value displayed
     float lastValueMin     = 0.f;   // observed min over recent history
@@ -195,6 +194,7 @@ struct Gauge : Module {
 
         // Push channel-0 scaled value into a small ring buffer at ~120 Hz
         // so the visualisation can show a recent-range bar.
+        static int frameCount = 0;
         int stride = std::max(1, (int)(args.sampleRate / 120.f));
         if (++frameCount >= stride) {
             frameCount = 0;

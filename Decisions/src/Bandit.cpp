@@ -94,7 +94,7 @@ struct Bandit : Module {
         configInput(CLOCK_INPUT, "Clock — pulls one arm per tick (internal 4 Hz)");
         configInput(RESET_INPUT, "Reset learning + re-draw arm means");
         configOutput(REWARD_OUTPUT, "Reward of most recent pull");
-        configOutput(REGRET_OUTPUT, "Cumulative regret");
+        configOutput(REGRET_OUTPUT, "Cumulative regret (scaled 0.05 V/unit)");
         configOutput(ARM_GATE_OUTPUT, "Per-arm pull gate (polyphonic)");
         configOutput(BEST_OUTPUT, "Fraction of pulls on optimal arm (0..10 V)");
         redrawArms();
@@ -142,11 +142,7 @@ struct Bandit : Module {
     }
 
     int selectUCB() {
-        // Classical UCB1 (Auer, Cesa-Bianchi & Fischer 2002):
-        //   pick argmax_i  q_i + c · sqrt( 2 · ln t / n_i )
-        // The factor of 2 is part of the published bound. The EPSILON_PARAM
-        // knob acts as an additional explore multiplier `c`; default c = 1.f
-        // recovers the textbook bonus, c < 1 explores less, c > 1 more.
+        // Initialize: pull each arm once before computing bonuses
         for (int i = 0; i < K; ++i) if (count[i] == 0) return i;
         float c = clamp(params[EPSILON_PARAM].getValue(), 0.f, 5.f);
         float lnT = std::log((float)totalPulls + 1.f);
@@ -154,7 +150,7 @@ struct Bandit : Module {
         int best = 0;
         for (int i = 0; i < K; ++i) {
             float q = (float)(sumR[i] / count[i]);
-            float bonus = c * std::sqrt(2.f * lnT / count[i]);
+            float bonus = c * std::sqrt(lnT / count[i]);
             float u = q + bonus;
             if (u > bestU) { bestU = u; best = i; }
         }
@@ -162,19 +158,12 @@ struct Bandit : Module {
     }
 
     int selectThompson() {
-        // Thompson sampling under a Normal–Normal model: each arm's true
-        // mean μ_i is drawn from a Normal posterior with mean = sample mean
-        // q_i and standard deviation that shrinks as 1/sqrt(n_i). Because the
-        // reward signal is real-valued (not Bernoulli), a Beta posterior is
-        // not the right conjugate; the Gaussian heuristic implemented here
-        // is the pragmatic choice for the Gaussian-reward regime that
-        // Empiria uses. Cold-start prior strength is kInitialSD.
-        constexpr float kInitialSD = 5.f;
+        // Normal posterior with empirical variance estimate ~ 1/N
         float bestS = -1e18f;
         int best = 0;
         for (int i = 0; i < K; ++i) {
-            float q  = (count[i] > 0) ? (float)(sumR[i] / count[i]) : 0.f;
-            float sd = (count[i] > 0) ? 1.f / std::sqrt((float)count[i]) : kInitialSD;
+            float q = (count[i] > 0) ? (float)(sumR[i] / count[i]) : 0.f;
+            float sd = (count[i] > 0) ? 1.f / std::sqrt((float)count[i]) : 5.f;
             std::normal_distribution<float> nd(q, sd);
             float s = nd(rng);
             if (s > bestS) { bestS = s; best = i; }
@@ -240,21 +229,6 @@ struct Bandit : Module {
         json_t* root = json_object();
         json_object_set_new(root, "seedVal", json_integer((json_int_t)seedVal));
         json_object_set_new(root, "policy",  json_integer(policy));
-        json_object_set_new(root, "totalPulls", json_integer(totalPulls));
-        json_object_set_new(root, "bestArm",    json_integer(bestArm));
-        json_object_set_new(root, "bestPulls",  json_integer(bestPulls));
-        json_object_set_new(root, "cumRegret",  json_real(cumRegret));
-        json_t* muArr  = json_array();
-        json_t* sumArr = json_array();
-        json_t* cntArr = json_array();
-        for (int i = 0; i < kMaxK; ++i) {
-            json_array_append_new(muArr,  json_real(mu[i]));
-            json_array_append_new(sumArr, json_real(sumR[i]));
-            json_array_append_new(cntArr, json_integer(count[i]));
-        }
-        json_object_set_new(root, "mu",    muArr);
-        json_object_set_new(root, "sumR",  sumArr);
-        json_object_set_new(root, "count", cntArr);
         return root;
     }
     void dataFromJson(json_t* root) override {
@@ -262,22 +236,6 @@ struct Bandit : Module {
             seedVal = (uint32_t)json_integer_value(j);
         if (auto* j = json_object_get(root, "policy"))
             policy = clamp((int)json_integer_value(j), 0, NUM_POLICIES - 1);
-        if (auto* j = json_object_get(root, "totalPulls")) totalPulls = (int)json_integer_value(j);
-        if (auto* j = json_object_get(root, "bestArm"))    bestArm    = (int)json_integer_value(j);
-        if (auto* j = json_object_get(root, "bestPulls"))  bestPulls  = (int)json_integer_value(j);
-        if (auto* j = json_object_get(root, "cumRegret"))  cumRegret  = json_number_value(j);
-        auto loadArr = [](json_t* arr, auto& dst, int maxN) {
-            if (!arr || !json_is_array(arr)) return;
-            size_t n = std::min((size_t)maxN, json_array_size(arr));
-            for (size_t i = 0; i < n; ++i) {
-                json_t* v = json_array_get(arr, i);
-                if (json_is_number(v)) dst[i] =
-                    static_cast<typename std::remove_reference<decltype(dst[i])>::type>(json_number_value(v));
-            }
-        };
-        loadArr(json_object_get(root, "mu"),    mu,    kMaxK);
-        loadArr(json_object_get(root, "sumR"),  sumR,  kMaxK);
-        loadArr(json_object_get(root, "count"), count, kMaxK);
     }
 };
 
@@ -437,10 +395,12 @@ struct BanditWidget : ModuleWidget {
         labels->out(2, "ARMS"); labels->out(3, "BEST");
         addChild(labels);
 
-        addChild(createWidget<ScrewSilver>(Vec(15, 0)));
-        addChild(createWidget<ScrewSilver>(Vec(270, 0)));
-        addChild(createWidget<ScrewSilver>(Vec(15, 365)));
-        addChild(createWidget<ScrewSilver>(Vec(270, 365)));
+        // Corners flush at {0, 285} (family 300px convention) so the bottom-right
+        // screw clears the x=270 output-jack column.
+        addChild(createWidget<ScrewSilver>(Vec(0, 0)));
+        addChild(createWidget<ScrewSilver>(Vec(285, 0)));
+        addChild(createWidget<ScrewSilver>(Vec(0, 365)));
+        addChild(createWidget<ScrewSilver>(Vec(285, 365)));
 
         auto* view = new BanditView;
         view->module = module;
@@ -501,14 +461,10 @@ struct BanditWidget : ModuleWidget {
         add("Thompson sampling", Bandit::POLICY_THOMPSON);
 
         appendAboutMenu(menu, "Bandit",
-            {"Explore vs. exploit — the foundational dilemma in RL.",
-             "A doctor between treatments, an A/B test deciding when",
-             "to stop, a casino with rigged slot machines. Three",
-             "classic policies on K arms with unknown true means."},
-            "Tape (record reward trajectory), Frame (mean reward).",
-            {"Start with ε-greedy, ε = 0.1: most pulls go to the",
-             "current best. Switch to UCB1: rare arms also get tried.",
-             "Switch to Thompson: belief-driven balance. Compare regret."});
+            {"K-armed bandit with UCB1, ε-greedy, and Thompson sampling",
+             "policies. Outputs arm pulls, cumulative regret, and the",
+             "current action selection."},
+            "Tape (record reward trajectory), Frame (mean reward)");
     }
 };
 
